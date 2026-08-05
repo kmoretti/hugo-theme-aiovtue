@@ -1,7 +1,7 @@
 {{- $safego := .Site.Params.safego | default dict -}}
 {{- $path := $safego.path | default "/go/" -}}
 {{- $param := $safego.param | default "u" -}}
-{{- $countdown := 3 -}}
+{{- $countdown := 5 -}}
 {{- if isset $safego "countdown" }}{{- $countdown = $safego.countdown -}}{{- end -}}
 {{- $darkmode := "auto" -}}
 {{- if isset $safego "darkmode" }}{{- $darkmode = $safego.darkmode -}}{{- end -}}
@@ -19,6 +19,7 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="{{ .Site.Params.primaryColor | default "#E5A84B" }}">
   <link rel="icon" href="{{ $avatar | relURL }}" type="image/png">
+  <link rel="preload" as="image" href="{{ $avatar | relURL }}">
   <link rel="stylesheet" href="{{ "fonts/lxgw-wenkai-screen/style.css" | relURL }}">
   <title>即将离开{{ $siteTitle }}</title>
   <style>
@@ -90,7 +91,6 @@
       background: var(--safego-card);
       box-shadow: var(--safego-shadow);
       backdrop-filter: blur(16px);
-      animation: safego-enter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
 
     .safego-shell::before,
@@ -117,9 +117,11 @@
       border: 4px solid color-mix(in srgb, var(--safego-primary) 24%, #fff);
       border-radius: 50%;
       object-fit: cover;
-      background: var(--safego-soft);
+      visibility: hidden;
       box-shadow: 0 8px 24px color-mix(in srgb, var(--safego-primary) 20%, transparent);
     }
+    .safego-avatar.is-ready { visibility: visible; }
+    .safego-avatar.is-error { visibility: hidden; }
     .safego-eyebrow {
       margin: 0;
       color: var(--safego-primary);
@@ -218,7 +220,7 @@
       height: 100%;
       transform-origin: left center;
       background: var(--safego-primary);
-      transition: width 1s linear;
+      transition: none;
     }
 
     .safego-actions {
@@ -266,10 +268,6 @@
     [hidden] { display: none !important; }
     :focus-visible { outline: 3px solid color-mix(in srgb, var(--safego-primary) 48%, transparent); outline-offset: 3px; }
 
-    @keyframes safego-enter {
-      from { opacity: 0; transform: translateY(14px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
     @media (max-width: 520px) {
       body { padding: 14px; }
       .safego-shell { padding: 30px 18px 22px; border-radius: 18px; }
@@ -285,9 +283,10 @@
 <body>
   {{- $base64Encode := true -}}
   {{- if isset $safego "base64Encode" }}{{- $base64Encode = $safego.base64Encode -}}{{- end -}}
-  <main class="safego-shell" data-safego-root data-param="{{ $param }}" data-base64="{{ if $base64Encode }}true{{ else }}false{{ end }}" data-countdown="{{ $countdown }}" data-home="{{ "/" | relURL }}" data-leave-text="{{ $leaveText }}" data-countdown-text="{{ $countdownText }}" data-manual-text="{{ $manualConfirmText }}">
+  {{- $returnParam := $safego.returnParam | default "from" -}}
+  <main class="safego-shell" data-safego-root data-param="{{ $param }}" data-return-param="{{ $returnParam }}" data-base64="{{ if $base64Encode }}true{{ else }}false{{ end }}" data-countdown="{{ $countdown }}" data-home="{{ "/" | relURL }}" data-leave-text="{{ $leaveText }}" data-countdown-text="{{ $countdownText }}" data-manual-text="{{ $manualConfirmText }}">
     <header class="safego-identity">
-      <img class="safego-avatar" src="{{ $avatar | relURL }}" alt="{{ $siteTitle }}" width="76" height="76" onerror="this.hidden=true">
+      <img class="safego-avatar" src="{{ $avatar | relURL }}" alt="{{ $siteTitle }}" width="76" height="76" onload="this.classList.add('is-ready')" onerror="this.classList.add('is-error')">
       <p class="safego-eyebrow">外链安全中转</p>
       <h1>即将离开{{ $siteTitle }}</h1>
       <p class="safego-subtitle">{{ $subtitle }}</p>
@@ -306,7 +305,7 @@
     </section>
 
     <div class="safego-actions">
-      <button class="safego-button" type="button" data-home-button>返回博客首页</button>
+      <button class="safego-button" type="button" data-home-button>返回来源页面</button>
       <button class="safego-button safego-button--primary" type="button" data-go-button>立即跳转</button>
     </div>
     <p class="safego-footnote">请确认目标地址可信后再继续访问。</p>
@@ -326,11 +325,26 @@
       const homeButton = root.querySelector('[data-home-button]');
       const goButton = root.querySelector('[data-go-button]');
       const param = root.dataset.param || 'u';
+      const returnParam = root.dataset.returnParam || 'from';
       const useBase64 = root.dataset.base64 === 'true';
       const configuredCountdown = Number(root.dataset.countdown);
       const countdownText = root.dataset.countdownText || '将在 {seconds} 秒后自动跳转';
       const manualText = root.dataset.manualText || '请确认目标地址安全后，再点击立即跳转。';
       const homeUrl = root.dataset.home || '/';
+      const resolveReturnUrl = (value) => {
+        if (!value) return homeUrl;
+        try {
+          const parsed = new URL(value, window.location.origin);
+          if (parsed.origin !== window.location.origin || !['http:', 'https:'].includes(parsed.protocol)) return homeUrl;
+          return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+        } catch (_) {
+          return homeUrl;
+        }
+      };
+      const query = new URL(window.location.href).searchParams;
+      const rawReturnUrl = query.get(returnParam);
+      const returnUrl = resolveReturnUrl(rawReturnUrl);
+      homeButton.textContent = rawReturnUrl && returnUrl !== homeUrl ? '返回来源页面' : '返回博客首页';
       let targetUrl = '';
       let timer = null;
 
@@ -351,7 +365,7 @@
           return false;
         }
       };
-      const goHome = () => { window.location.href = homeUrl; };
+      const goReturn = () => { window.location.href = returnUrl; };
       const goTarget = () => { if (targetUrl) window.location.href = targetUrl; };
       const showInvalid = () => {
         targetUrl = '';
@@ -362,7 +376,7 @@
         goButton.setAttribute('aria-disabled', 'true');
         progressWrap.hidden = true;
         if (timer) window.clearInterval(timer);
-        setStatus('无法验证目标地址，请返回博客。');
+        setStatus('无法验证目标地址，请点击下方返回按钮。');
         document.title = '链接无效 | {{ $siteTitle }}';
       };
       const copyTarget = async () => {
@@ -397,29 +411,33 @@
           goTarget();
           return;
         }
-        let remaining = Math.floor(configuredCountdown);
+        const totalMs = configuredCountdown * 1000;
+        const startedAt = performance.now();
         progressWrap.hidden = false;
         progress.style.width = '100%';
         const update = () => {
-          setStatus(countdownText.replace('{seconds}', String(remaining)));
-          progress.style.width = `${Math.max(0, (remaining / configuredCountdown) * 100)}%`;
-          if (remaining <= 0) {
-            if (timer) window.clearInterval(timer);
+          const elapsedMs = performance.now() - startedAt;
+          const remainingMs = Math.max(0, totalMs - elapsedMs);
+          const remainingSeconds = Math.ceil(remainingMs / 1000);
+          progress.style.width = `${Math.max(0, (remainingMs / totalMs) * 100)}%`;
+          if (remainingMs <= 0) {
+            if (timer) window.clearTimeout(timer);
+            setStatus('正在跳转…');
             goTarget();
             return;
           }
-          remaining -= 1;
+          setStatus(countdownText.replace('{seconds}', String(remainingSeconds)));
+          timer = window.setTimeout(update, Math.min(250, Math.max(30, remainingMs)));
         };
         update();
-        timer = window.setInterval(update, 1000);
       };
 
       copyButton.addEventListener('click', copyTarget);
-      homeButton.addEventListener('click', goHome);
+      homeButton.addEventListener('click', goReturn);
       goButton.addEventListener('click', goTarget);
 
       try {
-        const rawValue = new URL(window.location.href).searchParams.get(param);
+        const rawValue = query.get(param);
         if (!rawValue) throw new Error('missing target');
         targetUrl = decodeTarget(rawValue);
         if (!validTarget(targetUrl)) throw new Error('unsafe target');

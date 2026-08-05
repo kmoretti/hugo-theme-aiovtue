@@ -36,7 +36,9 @@
       {{- end -}}
       {{- $path := $safego.path | default "/go/" -}}
       {{- $param := $safego.param | default "u" -}}
-      {{- $href = printf "%s?%s=%s" ($path | relURL) $param $encoded -}}
+      {{- $returnParam := $safego.returnParam | default "from" -}}
+      {{- $returnValue := .Page.RelPermalink | urlquery -}}
+      {{- $href = printf "%s?%s=%s&%s=%s" ($path | relURL) $param $encoded $returnParam $returnValue -}}
       {{- $safegoProcessed = true -}}
     {{- end -}}
   {{- end -}}
