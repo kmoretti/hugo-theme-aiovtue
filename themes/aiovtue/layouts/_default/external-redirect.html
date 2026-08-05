@@ -21,8 +21,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
+  <meta name="sakura-skip-loader" content="1">
   <meta name="theme-color" content="{{ .Site.Params.primaryColor | default "#E5A84B" }}">
   <link rel="icon" href="{{ $favicon | relURL }}" type="image/png">
+  <script>document.documentElement.classList.add('sakura-skip-loader')</script>
   <link rel="stylesheet" href="{{ "fonts/lxgw-wenkai-screen/style.css" | relURL }}">
   <title>即将离开{{ $siteTitle }}</title>
   <style>
@@ -68,7 +70,13 @@
     {{ end }}
 
     * { box-sizing: border-box; }
-    html, body { min-height: 100%; }
+    html, body { min-height: 100%; cursor: default !important; }
+    #va-fouc-loader,
+    #sakura-pjax-loader,
+    .sakura-music,
+    .sakura-fx-layer,
+    [id*="live2d"],
+    [class*="live2d"] { display: none !important; }
     body {
       display: grid;
       place-items: center;
@@ -189,6 +197,21 @@
       text-align: center;
       font-size: 0.9rem;
     }
+    .safego-progress {
+      height: 6px;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--safego-primary) 13%, transparent);
+    }
+    .safego-progress-bar {
+      width: 100%;
+      height: 100%;
+      transform: scaleX(1);
+      transform-origin: left center;
+      border-radius: inherit;
+      background: var(--safego-primary);
+    }
     .safego-actions {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -261,6 +284,9 @@
         </button>
       </div>
       <p class="safego-status" data-status aria-live="polite">正在准备跳转…</p>
+      <div class="safego-progress" data-progress-wrap role="progressbar" aria-label="自动跳转倒计时" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" hidden>
+        <div class="safego-progress-bar" data-progress></div>
+      </div>
     </section>
 
     <div class="safego-actions">
@@ -272,12 +298,15 @@
 
   <script>
     (() => {
+      document.querySelectorAll('#va-fouc-loader, #sakura-pjax-loader, .sakura-music, .sakura-fx-layer, [id*="live2d"], [class*="live2d"]').forEach((element) => element.remove());
       const root = document.querySelector('[data-safego-root]');
       if (!root) return;
 
       const targetBox = root.querySelector('[data-target-box]');
       const targetText = root.querySelector('[data-target-text]');
       const status = root.querySelector('[data-status]');
+      const progressWrap = root.querySelector('[data-progress-wrap]');
+      const progress = root.querySelector('[data-progress]');
       const copyButton = root.querySelector('[data-copy]');
       const homeButton = root.querySelector('[data-home-button]');
       const goButton = root.querySelector('[data-go-button]');
@@ -331,6 +360,7 @@
         copyButton.hidden = true;
         goButton.disabled = true;
         goButton.setAttribute('aria-disabled', 'true');
+        progressWrap.hidden = true;
         if (timer) window.clearTimeout(timer);
         setStatus('无法验证目标地址，请点击下方返回按钮。');
         document.title = '链接无效 | {{ $siteTitle }}';
@@ -370,10 +400,16 @@
         const totalMs = configuredCountdown * 1000;
         const startedAt = performance.now();
         let lastRemainingSeconds = -1;
+        progressWrap.hidden = false;
+        progress.style.transform = 'scaleX(1)';
+        progressWrap.setAttribute('aria-valuenow', '100');
         const update = () => {
           const elapsedMs = performance.now() - startedAt;
           const remainingMs = Math.max(0, totalMs - elapsedMs);
           const remainingSeconds = Math.ceil(remainingMs / 1000);
+          const remainingPercent = Math.max(0, (remainingMs / totalMs) * 100);
+          progress.style.transform = `scaleX(${remainingPercent / 100})`;
+          progressWrap.setAttribute('aria-valuenow', String(Math.round(remainingPercent)));
           if (remainingMs <= 0) {
             if (timer) window.clearTimeout(timer);
             setStatus('正在跳转…');
