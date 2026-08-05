@@ -4,5 +4,50 @@
 {{- if $isSignature -}}
 {{- partial "signature-inline.html" (partial "signature-prose-args.html" .) -}}
 {{- else -}}
-<a href="{{ .Destination | safeURL }}"{{ with .Title }} title="{{ . }}"{{ end }}{{ if strings.HasPrefix $dest "http" }} target="_blank" rel="noopener"{{ end }}>{{ .Text | safeHTML }}</a>
+  {{- $safego := .Page.Site.Params.safego | default dict -}}
+  {{- $href := $dest -}}
+  {{- $isExternalHttp := or (hasPrefix (lower $dest) "http://") (hasPrefix (lower $dest) "https://") -}}
+  {{- $safegoEnabled := false -}}
+  {{- if isset $safego "enable" -}}{{- $safegoEnabled = $safego.enable -}}{{- end -}}
+  {{- $targetBlank := true -}}
+  {{- if isset $safego "targetBlank" -}}{{- $targetBlank = $safego.targetBlank -}}{{- end -}}
+  {{- $base64Encode := true -}}
+  {{- if isset $safego "base64Encode" -}}{{- $base64Encode = $safego.base64Encode -}}{{- end -}}
+  {{- $shouldSafego := and $safegoEnabled $isExternalHttp (ne .Page.Params.safego false) -}}
+  {{- $safegoProcessed := false -}}
+  {{- if $shouldSafego -}}
+    {{- $parsed := urls.Parse $dest -}}
+    {{- $host := lower $parsed.Hostname -}}
+    {{- $siteURL := urls.Parse (.Page.Site.BaseURL | absURL) -}}
+    {{- $siteHost := lower $siteURL.Hostname -}}
+    {{- $isWhitelisted := eq $host $siteHost -}}
+    {{- range ($safego.domainWhitelist | default slice) -}}
+      {{- $allowed := lower (strings.TrimSuffix (strings.TrimSpace .) ".") -}}
+      {{- if and (ne $allowed "") (or (eq $host $allowed) (hasSuffix $host (printf ".%s" $allowed))) -}}
+        {{- $isWhitelisted = true -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if not $isWhitelisted -}}
+      {{- $encoded := $dest -}}
+      {{- if $base64Encode -}}
+        {{- $encoded = replace (replace (replace (base64Encode $dest) "+" "-") "/" "_") "=" "" -}}
+      {{- else -}}
+        {{- $encoded = $dest | urlquery -}}
+      {{- end -}}
+      {{- $path := $safego.path | default "/go/" -}}
+      {{- $param := $safego.param | default "u" -}}
+      {{- $href = printf "%s?%s=%s" ($path | relURL) $param $encoded -}}
+      {{- $safegoProcessed = true -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $linkTargetBlank := $isExternalHttp -}}
+  {{- $linkRel := "" -}}
+  {{- if $isExternalHttp -}}
+    {{- $linkRel = "noopener" -}}
+    {{- if $safegoProcessed -}}
+      {{- $linkTargetBlank = $targetBlank -}}
+      {{- $linkRel = "external nofollow noopener noreferrer" -}}
+    {{- end -}}
+  {{- end -}}
+<a href="{{ $href | safeURL }}"{{ with .Title }} title="{{ . }}"{{ end }}{{ if $linkTargetBlank }} target="_blank"{{ end }}{{ with $linkRel }} rel="{{ . }}"{{ end }}>{{ .Text | safeHTML }}</a>
 {{- end -}}

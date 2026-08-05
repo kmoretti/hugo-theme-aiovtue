@@ -26,6 +26,7 @@
 #   params.mouse        团团猫动态鼠标指针
 #   params.effects      全站背景特效（樱花/雨/雪等）
 #   params.pjax        无刷新跳转
+#   params.safego      外链安全中转
 # =============================================================================
 
 # 站点正式访问地址（影响 sitemap、RSS、分享链接等绝对 URL，部署前务必与真实域名一致）
@@ -470,3 +471,17 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
     enable = true
     fadeDuration = 200                            # 内容区淡入淡出时长（毫秒）
     mountDelay = 120                              # 页内跳转：CSS/JS 就绪后额外等待（毫秒），减少布局突变
+
+  # --- 外链安全中转（仅处理 Markdown 正文中的站外 HTTP/HTTPS 链接）---
+  [params.safego]
+    enable = true                                   # 是否启用外链中转
+    base64Encode = true                             # 是否使用 URL-safe Base64 编码目标地址
+    targetBlank = true                              # 是否在新窗口打开中转页
+    path = '/go/'                                   # 中转页路径
+    param = 'u'                                     # 目标地址查询参数名
+    countdown = 3                                   # 自动跳转倒计时（秒）；小于 0 时仅手动跳转
+    darkmode = 'auto'                               # auto：跟随系统；也可设为 true / false
+    domainWhitelist = []                            # 额外放行的域名（不含协议）
+    leaveText = '你即将访问站外链接，请确认目标地址后继续。'
+    countdownText = '将在 {seconds} 秒后自动跳转'
+    manualConfirmText = '请确认目标地址安全后，再点击立即跳转。'

@@ -1,0 +1,435 @@
+{{- $safego := .Site.Params.safego | default dict -}}
+{{- $path := $safego.path | default "/go/" -}}
+{{- $param := $safego.param | default "u" -}}
+{{- $countdown := 3 -}}
+{{- if isset $safego "countdown" }}{{- $countdown = $safego.countdown -}}{{- end -}}
+{{- $darkmode := "auto" -}}
+{{- if isset $safego "darkmode" }}{{- $darkmode = $safego.darkmode -}}{{- end -}}
+{{- $avatar := .Site.Params.author.avatar | default (.Site.Params.favicon | default "/favicon.png") -}}
+{{- $siteTitle := .Site.Title | default "喵洛阁" -}}
+{{- $subtitle := .Site.Params.subtitle | default "外链安全中转" -}}
+{{- $leaveText := $safego.leaveText | default "你即将访问站外链接，请确认目标地址后继续。" -}}
+{{- $countdownText := $safego.countdownText | default "将在 {seconds} 秒后自动跳转" -}}
+{{- $manualConfirmText := $safego.manualConfirmText | default "请确认目标地址安全后，再点击立即跳转。" -}}
+<!DOCTYPE html>
+<html lang="zh-CN" translate="no" class="notranslate">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="{{ .Site.Params.primaryColor | default "#E5A84B" }}">
+  <link rel="icon" href="{{ $avatar | relURL }}" type="image/png">
+  <link rel="stylesheet" href="{{ "fonts/lxgw-wenkai-screen/style.css" | relURL }}">
+  <title>即将离开{{ $siteTitle }}</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --safego-primary: {{ .Site.Params.primaryColor | default "#E5A84B" }};
+      --safego-bg: #fffaf3;
+      --safego-card: rgba(255, 255, 255, 0.86);
+      --safego-text: #4c4948;
+      --safego-deep: #333;
+      --safego-muted: #888;
+      --safego-border: rgba(76, 73, 72, 0.13);
+      --safego-soft: color-mix(in srgb, var(--safego-primary) 10%, #fff);
+      --safego-shadow: 0 24px 70px rgba(91, 67, 31, 0.14);
+    }
+
+    {{ if eq $darkmode true }}
+    :root {
+      color-scheme: dark;
+      --safego-bg: #1a1a1a;
+      --safego-card: rgba(37, 37, 37, 0.9);
+      --safego-text: #e8e8e8;
+      --safego-deep: #f8f8f8;
+      --safego-muted: #a8a8a8;
+      --safego-border: rgba(255, 255, 255, 0.15);
+      --safego-soft: color-mix(in srgb, var(--safego-primary) 18%, #252525);
+      --safego-shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
+    }
+    {{ else if eq $darkmode "auto" }}
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: dark;
+        --safego-bg: #1a1a1a;
+        --safego-card: rgba(37, 37, 37, 0.9);
+        --safego-text: #e8e8e8;
+        --safego-deep: #f8f8f8;
+        --safego-muted: #a8a8a8;
+        --safego-border: rgba(255, 255, 255, 0.15);
+        --safego-soft: color-mix(in srgb, var(--safego-primary) 18%, #252525);
+        --safego-shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
+      }
+    }
+    {{ end }}
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      display: grid;
+      place-items: center;
+      min-height: 100svh;
+      margin: 0;
+      padding: 24px;
+      overflow-x: hidden;
+      color: var(--safego-text);
+      background:
+        radial-gradient(circle at 15% 15%, color-mix(in srgb, var(--safego-primary) 15%, transparent), transparent 32%),
+        radial-gradient(circle at 85% 85%, color-mix(in srgb, var(--safego-primary) 11%, transparent), transparent 30%),
+        var(--safego-bg);
+      font-family: "LXGW WenKai Screen", "Microsoft YaHei", STKaiti, KaiTi, serif;
+      line-height: 1.7;
+    }
+
+    .safego-shell {
+      position: relative;
+      width: min(100%, 640px);
+      padding: clamp(26px, 6vw, 56px);
+      border: 1px solid var(--safego-border);
+      border-radius: 24px;
+      background: var(--safego-card);
+      box-shadow: var(--safego-shadow);
+      backdrop-filter: blur(16px);
+      animation: safego-enter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .safego-shell::before,
+    .safego-shell::after {
+      position: absolute;
+      z-index: -1;
+      display: block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--safego-primary);
+      content: "";
+      opacity: 0.65;
+    }
+    .safego-shell::before { top: 28px; left: 28px; }
+    .safego-shell::after { right: 28px; bottom: 28px; opacity: 0.3; }
+
+    .safego-identity { text-align: center; }
+    .safego-avatar {
+      display: block;
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 18px;
+      border: 4px solid color-mix(in srgb, var(--safego-primary) 24%, #fff);
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--safego-soft);
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--safego-primary) 20%, transparent);
+    }
+    .safego-eyebrow {
+      margin: 0;
+      color: var(--safego-primary);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+    }
+    h1 {
+      margin: 4px 0 0;
+      color: var(--safego-deep);
+      font-size: clamp(1.45rem, 4vw, 2rem);
+      line-height: 1.35;
+    }
+    .safego-subtitle {
+      margin: 4px 0 24px;
+      color: var(--safego-muted);
+      font-size: 0.95rem;
+    }
+
+    .safego-message {
+      margin: 0 0 16px;
+      text-align: center;
+      font-size: 1rem;
+    }
+    .safego-target {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 66px;
+      margin: 0;
+      padding: 14px 58px 14px 16px;
+      overflow: hidden;
+      border: 1px solid var(--safego-border);
+      border-radius: 14px;
+      background: var(--safego-soft);
+      color: var(--safego-deep);
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 0.84rem;
+      line-height: 1.55;
+      word-break: break-all;
+    }
+    .safego-target.is-invalid {
+      color: var(--safego-muted);
+      font-family: inherit;
+      word-break: normal;
+    }
+    .safego-target-text {
+      display: -webkit-box;
+      max-height: 3.1em;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+    .safego-copy {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      transform: translateY(-50%);
+      border: 1px solid var(--safego-border);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--safego-muted);
+      cursor: pointer;
+      transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    }
+    .safego-copy:hover,
+    .safego-copy:focus-visible {
+      background: color-mix(in srgb, var(--safego-primary) 14%, transparent);
+      color: var(--safego-primary);
+    }
+    .safego-copy:active { transform: translateY(-50%) scale(0.94); }
+    .safego-copy svg { width: 18px; height: 18px; fill: currentColor; }
+
+    .safego-status {
+      min-height: 30px;
+      margin: 16px 0 0;
+      color: var(--safego-muted);
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    .safego-progress {
+      height: 6px;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--safego-primary) 13%, transparent);
+    }
+    .safego-progress-bar {
+      width: 100%;
+      height: 100%;
+      transform-origin: left center;
+      background: var(--safego-primary);
+      transition: width 1s linear;
+    }
+
+    .safego-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+    .safego-button {
+      min-height: 46px;
+      padding: 8px 16px;
+      border: 1px solid var(--safego-border);
+      border-radius: 12px;
+      background: transparent;
+      color: var(--safego-text);
+      font: inherit;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+    .safego-button:hover,
+    .safego-button:focus-visible {
+      border-color: var(--safego-primary);
+      color: var(--safego-primary);
+    }
+    .safego-button:active { transform: translateY(1px); }
+    .safego-button--primary {
+      border-color: var(--safego-primary);
+      background: var(--safego-primary);
+      color: #fff;
+      box-shadow: 0 8px 18px color-mix(in srgb, var(--safego-primary) 28%, transparent);
+    }
+    .safego-button--primary:hover,
+    .safego-button--primary:focus-visible {
+      background: color-mix(in srgb, var(--safego-primary) 82%, #000);
+      color: #fff;
+    }
+    .safego-footnote {
+      margin: 22px 0 0;
+      color: var(--safego-muted);
+      font-size: 0.78rem;
+      text-align: center;
+    }
+
+    [hidden] { display: none !important; }
+    :focus-visible { outline: 3px solid color-mix(in srgb, var(--safego-primary) 48%, transparent); outline-offset: 3px; }
+
+    @keyframes safego-enter {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 520px) {
+      body { padding: 14px; }
+      .safego-shell { padding: 30px 18px 22px; border-radius: 18px; }
+      .safego-shell::before { top: 18px; left: 18px; }
+      .safego-shell::after { right: 18px; bottom: 18px; }
+      .safego-actions { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  {{- $base64Encode := true -}}
+  {{- if isset $safego "base64Encode" }}{{- $base64Encode = $safego.base64Encode -}}{{- end -}}
+  <main class="safego-shell" data-safego-root data-param="{{ $param }}" data-base64="{{ if $base64Encode }}true{{ else }}false{{ end }}" data-countdown="{{ $countdown }}" data-home="{{ "/" | relURL }}" data-leave-text="{{ $leaveText }}" data-countdown-text="{{ $countdownText }}" data-manual-text="{{ $manualConfirmText }}">
+    <header class="safego-identity">
+      <img class="safego-avatar" src="{{ $avatar | relURL }}" alt="{{ $siteTitle }}" width="76" height="76" onerror="this.hidden=true">
+      <p class="safego-eyebrow">外链安全中转</p>
+      <h1>即将离开{{ $siteTitle }}</h1>
+      <p class="safego-subtitle">{{ $subtitle }}</p>
+    </header>
+
+    <section aria-labelledby="safego-message">
+      <p class="safego-message" id="safego-message">{{ $leaveText }}</p>
+      <div class="safego-target" data-target-box>
+        <span class="safego-target-text" data-target-text>正在检查链接…</span>
+        <button class="safego-copy" type="button" data-copy aria-label="复制目标地址" title="复制目标地址">
+          <svg viewBox="0 0 448 512" aria-hidden="true"><path d="M208 0h124.1c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9V336c0 26.5-21.5 48-48 48H208c-26.5 0-48-21.5-48-48V48c0-26.5 21.5-48 48-48zM48 128h80v64H64v256h192v-32h64v48c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V176c0-26.5 21.5-48 48-48z"/></svg>
+        </button>
+      </div>
+      <p class="safego-status" data-status aria-live="polite">正在准备跳转…</p>
+      <div class="safego-progress" data-progress-wrap hidden aria-hidden="true"><div class="safego-progress-bar" data-progress></div></div>
+    </section>
+
+    <div class="safego-actions">
+      <button class="safego-button" type="button" data-home-button>返回博客首页</button>
+      <button class="safego-button safego-button--primary" type="button" data-go-button>立即跳转</button>
+    </div>
+    <p class="safego-footnote">请确认目标地址可信后再继续访问。</p>
+  </main>
+
+  <script>
+    (() => {
+      const root = document.querySelector('[data-safego-root]');
+      if (!root) return;
+
+      const targetBox = root.querySelector('[data-target-box]');
+      const targetText = root.querySelector('[data-target-text]');
+      const status = root.querySelector('[data-status]');
+      const progressWrap = root.querySelector('[data-progress-wrap]');
+      const progress = root.querySelector('[data-progress]');
+      const copyButton = root.querySelector('[data-copy]');
+      const homeButton = root.querySelector('[data-home-button]');
+      const goButton = root.querySelector('[data-go-button]');
+      const param = root.dataset.param || 'u';
+      const useBase64 = root.dataset.base64 === 'true';
+      const configuredCountdown = Number(root.dataset.countdown);
+      const countdownText = root.dataset.countdownText || '将在 {seconds} 秒后自动跳转';
+      const manualText = root.dataset.manualText || '请确认目标地址安全后，再点击立即跳转。';
+      const homeUrl = root.dataset.home || '/';
+      let targetUrl = '';
+      let timer = null;
+
+      const setStatus = (message) => { status.textContent = message; };
+      const decodeBase64Url = (value) => {
+        const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
+        const padded = normalized + '='.repeat((4 - normalized.length % 4) % 4);
+        const binary = atob(padded);
+        const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+        return new TextDecoder().decode(bytes);
+      };
+      const decodeTarget = (value) => useBase64 ? decodeBase64Url(value) : value;
+      const validTarget = (value) => {
+        try {
+          const url = new URL(value);
+          return (url.protocol === 'http:' || url.protocol === 'https:') && Boolean(url.hostname);
+        } catch (_) {
+          return false;
+        }
+      };
+      const goHome = () => { window.location.href = homeUrl; };
+      const goTarget = () => { if (targetUrl) window.location.href = targetUrl; };
+      const showInvalid = () => {
+        targetUrl = '';
+        targetBox.classList.add('is-invalid');
+        targetText.textContent = '链接参数无效或已损坏';
+        copyButton.hidden = true;
+        goButton.disabled = true;
+        goButton.setAttribute('aria-disabled', 'true');
+        progressWrap.hidden = true;
+        if (timer) window.clearInterval(timer);
+        setStatus('无法验证目标地址，请返回博客。');
+        document.title = '链接无效 | {{ $siteTitle }}';
+      };
+      const copyTarget = async () => {
+        if (!targetUrl) return;
+        try {
+          await navigator.clipboard.writeText(targetUrl);
+          setStatus('目标地址已复制。');
+        } catch (_) {
+          const input = document.createElement('textarea');
+          input.value = targetUrl;
+          input.style.position = 'fixed';
+          input.style.opacity = '0';
+          document.body.appendChild(input);
+          input.focus();
+          input.select();
+          try {
+            document.execCommand('copy');
+            setStatus('目标地址已复制。');
+          } catch (error) {
+            setStatus('复制失败，请手动选择目标地址。');
+          } finally {
+            input.remove();
+          }
+        }
+      };
+      const startCountdown = () => {
+        if (!Number.isFinite(configuredCountdown) || configuredCountdown < 0) {
+          setStatus(manualText);
+          return;
+        }
+        if (configuredCountdown === 0) {
+          goTarget();
+          return;
+        }
+        let remaining = Math.floor(configuredCountdown);
+        progressWrap.hidden = false;
+        progress.style.width = '100%';
+        const update = () => {
+          setStatus(countdownText.replace('{seconds}', String(remaining)));
+          progress.style.width = `${Math.max(0, (remaining / configuredCountdown) * 100)}%`;
+          if (remaining <= 0) {
+            if (timer) window.clearInterval(timer);
+            goTarget();
+            return;
+          }
+          remaining -= 1;
+        };
+        update();
+        timer = window.setInterval(update, 1000);
+      };
+
+      copyButton.addEventListener('click', copyTarget);
+      homeButton.addEventListener('click', goHome);
+      goButton.addEventListener('click', goTarget);
+
+      try {
+        const rawValue = new URL(window.location.href).searchParams.get(param);
+        if (!rawValue) throw new Error('missing target');
+        targetUrl = decodeTarget(rawValue);
+        if (!validTarget(targetUrl)) throw new Error('unsafe target');
+        targetText.textContent = targetUrl;
+        document.title = `即将访问 ${new URL(targetUrl).hostname} | {{ $siteTitle }}`;
+        startCountdown();
+      } catch (_) {
+        showInvalid();
+      }
+    })();
+  </script>
+</body>
+</html>
