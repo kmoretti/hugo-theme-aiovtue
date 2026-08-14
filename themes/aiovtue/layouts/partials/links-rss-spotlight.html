@@ -1,7 +1,7 @@
 {{- if not (partial "links-rss-enabled.html" .) -}}
 {{- /* disabled */ -}}
 {{- else -}}
-{{- $feeds := hugo.Data.links_rss.feeds | default slice -}}
+{{- $feeds := .Site.Data.links_rss.feeds | default slice -}}
 {{- if $feeds -}}
 <section
   class="links-rss-spotlight"

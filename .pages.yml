@@ -1,0 +1,130 @@
+# Pages CMS configuration: https://pagescms.org/docs/
+#
+# Remote writing flow:
+# 1. Pages CMS saves posts and uploads directly to the main branch.
+# 2. Cloudflare Pages detects that Git commit, runs pnpm run build, and publishes public/.
+# No deploy action or generated-output branch is needed.
+#
+# Pages CMS writes only fields declared below. Add a field here before using a new
+# post front matter key, otherwise saving through the CMS may remove that key.
+
+media:
+  input: static/img
+  output: /img
+  categories: [image, video]
+  rename: safe
+
+content:
+  - name: posts
+    label: Articles
+    type: collection
+    path: content/posts
+    format: yaml-frontmatter
+    filename:
+      # The filename determines the Hugo URL: content/posts/my-post.md -> /posts/my-post/.
+      template: "{primary}.md"
+      field: true
+    view:
+      fields: [title, date, draft, pinned]
+      primary: title
+      sort: [date, title]
+      search: [title, description, categories, tags]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+
+      - name: description
+        label: Description
+        type: text
+        description: Summary used by article cards, SEO, and sharing metadata.
+
+      - name: date
+        label: Publish date
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+
+      - name: lastmod
+        label: Last modified
+        type: date
+        options:
+          format: yyyy-MM-dd
+        description: Optional. Update this when a published post receives a material revision.
+
+      - name: cover
+        label: Cover image
+        type: image
+        description: Choose or upload media to static/img, or retain an existing external URL.
+
+      - name: categories
+        label: Categories
+        type: string
+        list: true
+        description: Use one or more categories. New posts are saved as a YAML list.
+
+      - name: tags
+        label: Tags
+        type: string
+        list: true
+
+      - name: draft
+        label: Draft
+        type: boolean
+        default: false
+        description: Draft posts are excluded from the production Hugo build.
+
+      - name: pinned
+        label: Pin on homepage
+        type: boolean
+        default: false
+
+      - name: math
+        label: Enable math rendering
+        type: boolean
+        default: false
+
+      - name: ai
+        label: AI summary
+        type: text
+        description: Optional AI-generated article summary used by the theme.
+
+      - name: comment
+        label: Enable comments
+        type: boolean
+        default: true
+
+      - name: indent
+        label: Indent paragraphs
+        type: boolean
+        default: true
+
+      - name: tocStartLevel
+        label: Table of contents start level
+        type: number
+        default: 3
+
+      - name: tocEndLevel
+        label: Table of contents end level
+        type: number
+        default: 4
+
+      - name: layout
+        label: Layout
+        type: string
+        description: Optional advanced layout, for example gallery-post. Leave blank for the normal post layout.
+
+      - name: weight
+        label: Weight
+        type: number
+        description: Optional manual sort order. Smaller values appear first.
+
+      - name: body
+        label: Body
+        type: rich-text
+        description: For posts with raw HTML, shortcodes, or complex Markdown, use the source editor before saving.

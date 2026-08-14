@@ -114,6 +114,14 @@ weight: 1                     # 可选，越小越靠前（置顶用）
 
 保存后，本地 `npm run dev` 即可在浏览器预览。
 
+### 远程写作（Pages CMS）
+
+本仓库已通过根目录 `.pages.yml` 接入 [Pages CMS](https://app.pagescms.org/)。首次使用时，以拥有仓库写入权限的 GitHub 账号登录，选择 `kmoretti/hugo-theme-aiovtue` 仓库和 `main` 分支。之后可在浏览器中创建、编辑、删除 `content/posts/` 下的文章，并向 `static/img/` 上传图片；上传后的站内引用为 `/img/<文件名>`。
+
+每次在 Pages CMS 保存都会直接提交到 `main`。Cloudflare Pages 的 Git 集成会自动构建并发布该提交，无需额外点击部署按钮。普通文章可使用富文本编辑器；包含原始 HTML、Hugo shortcode 或复杂 Markdown 的文章应切换到源码编辑模式，以避免可视化编辑器重新序列化正文。
+
+Pages CMS 仅管理文章和图片。新增文章 front matter 字段前，先在 `.pages.yml` 的 `fields` 中声明该字段，否则 CMS 保存文章时可能移除未声明的字段。
+
 ### 编辑 / 删除文章
 
 - **编辑：** 直接改对应的 `content/posts/*.md`
@@ -305,18 +313,19 @@ npx --yes serve public
 
 本站为纯静态站点，构建产物为 `public/` 目录，适合 [Cloudflare Pages](https://pages.cloudflare.com/)。
 
-1. 将 `hugo-blog/` 推送到 GitHub / GitLab 等
-2. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com/) → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**
-3. 选择仓库，配置构建设置：
+1. 将本仓库推送到 GitHub，并在 Cloudflare Pages 中通过 **Workers & Pages** → **Create** → **Pages** → **Connect to Git** 连接 `kmoretti/hugo-theme-aiovtue` 的 `main` 分支。
+2. 配置构建设置：
 
 | 设置项 | 值 |
 |--------|-----|
-| Framework preset | None（不要直接选hugo，cloudflare的hugo版本太低） |
-| Build command | `npm run build` |
+| Framework preset | None |
+| Production branch | `main` |
+| Build command | `pnpm run build` |
 | Build output directory | `public` |
 
+3. 保存并部署。构建脚本会在 Pages 中下载项目锁定的 Hugo Extended 版本，然后生成 `public/`。
 
-4. 保存并部署。首次成功后获得 `*.pages.dev` 预览地址。
+4. Pages CMS 保存文章或图片时会提交到 `main`，Cloudflare Pages 会自动为该提交创建部署；不需要 GitHub Actions、发布按钮或保存构建产物的分支。
 
 5. **绑定自定义域名：** Pages 项目 → **Custom domains** → 添加你的域名，按提示在 Cloudflare DNS 添加 CNAME。
 
