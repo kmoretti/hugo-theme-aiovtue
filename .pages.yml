@@ -169,17 +169,44 @@ content:
         label: Extension cards
         type: object
         list: true
-        description: Optional advanced cards. Keep the payload as JSON so each extension type retains its own schema.
+        description: Optional advanced cards. The payload is edited as structured fields for the supported extension types.
         fields:
           - name: type
             label: Type
             type: string
             required: true
           - name: payload
-            label: Payload JSON
-            type: code
-            options:
-              language: json
+            label: Payload
+            type: object
+            description: Fields vary by extension type. Leave fields unrelated to the selected type blank.
+            fields:
+              - name: repo_url
+                label: GitHub repository URL
+                type: string
+              - name: title
+                label: Title
+                type: string
+              - name: site
+                label: Website URL
+                type: string
+              - name: placeholder
+                label: Location label
+                type: string
+              - name: latitude
+                label: Latitude
+                type: number
+              - name: longitude
+                label: Longitude
+                type: number
+              - name: url
+                label: URL
+                type: string
+              - name: username
+                label: X username
+                type: string
+              - name: status_id
+                label: X status ID
+                type: string
 
       - name: body
         label: Body
