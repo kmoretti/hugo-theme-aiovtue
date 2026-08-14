@@ -118,9 +118,13 @@ weight: 1                     # 可选，越小越靠前（置顶用）
 
 本仓库已通过根目录 `.pages.yml` 接入 [Pages CMS](https://app.pagescms.org/)。首次使用时，以拥有仓库写入权限的 GitHub 账号登录，选择 `kmoretti/hugo-theme-aiovtue` 仓库和 `main` 分支。之后可在浏览器中创建、编辑、删除 `content/posts/` 下的文章，并向 `static/img/` 上传图片；上传后的站内引用为 `/img/<文件名>`。
 
+CMS 同时提供 **Moments** 集合，用于管理 `content/moments/` 下的动态；栏目配置文件 `_index.md` 不会显示在该集合中。填写日期和正文即可发布普通动态，可选开启首页滚动条并填写简短的滚动文案；带扩展卡片的动态可在 `Extension cards` 中保留其 `type` 与 JSON payload。
+
+文章的 **Cover URL** 支持外链和本地路径：可直接填写 `https://example.com/cover.webp`，也可填写 `/img/cover.webp`。媒体库上传功能仍用于管理仓库内的 `static/img/` 文件。
+
 每次在 Pages CMS 保存都会直接提交到 `main`。Cloudflare Pages 的 Git 集成会自动构建并发布该提交，无需额外点击部署按钮。普通文章可使用富文本编辑器；包含原始 HTML、Hugo shortcode 或复杂 Markdown 的文章应切换到源码编辑模式，以避免可视化编辑器重新序列化正文。
 
-Pages CMS 仅管理文章和图片。新增文章 front matter 字段前，先在 `.pages.yml` 的 `fields` 中声明该字段，否则 CMS 保存文章时可能移除未声明的字段。
+Pages CMS 仅管理文章、动态和图片。新增文章或动态 front matter 字段前，先在 `.pages.yml` 的 `fields` 中声明该字段，否则 CMS 保存时可能移除未声明的字段。
 
 ### 编辑 / 删除文章
 

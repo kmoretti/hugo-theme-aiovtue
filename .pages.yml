@@ -58,9 +58,9 @@ content:
         description: Optional. Update this when a published post receives a material revision.
 
       - name: cover
-        label: Cover image
-        type: image
-        description: Choose or upload media to static/img, or retain an existing external URL.
+        label: Cover URL
+        type: string
+        description: Paste an external image or video URL, or use a local path such as /img/cover.webp. Upload media with the Media library.
 
       - name: categories
         label: Categories
@@ -128,3 +128,60 @@ content:
         label: Body
         type: rich-text
         description: For posts with raw HTML, shortcodes, or complex Markdown, use the source editor before saving.
+
+  - name: moments
+    label: Moments
+    type: collection
+    path: content/moments
+    exclude: [_index.md]
+    format: yaml-frontmatter
+    filename:
+      # Use a unique filename, for example 2026-08-06-evening.md. It does not affect ticker order.
+      template: "{primary}.md"
+      field: true
+    view:
+      fields: [date, ticker, tickerText]
+      primary: tickerText
+      sort: [date]
+      search: [tickerText, body]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: date
+        label: Publish date
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+
+      - name: ticker
+        label: Show in homepage ticker
+        type: boolean
+        default: true
+
+      - name: tickerText
+        label: Ticker text
+        type: string
+        description: Optional short text for the homepage ticker. The Moment body is used when blank.
+
+      - name: extensions
+        label: Extension cards
+        type: object
+        list: true
+        description: Optional advanced cards. Keep the payload as JSON so each extension type retains its own schema.
+        fields:
+          - name: type
+            label: Type
+            type: string
+            required: true
+          - name: payload
+            label: Payload JSON
+            type: code
+            options:
+              language: json
+
+      - name: body
+        label: Body
+        type: rich-text
+        description: Write the Moment in Markdown. Use the source editor for raw HTML or complex Markdown.
