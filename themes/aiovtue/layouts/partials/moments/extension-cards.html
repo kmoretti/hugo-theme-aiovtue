@@ -1,0 +1,46 @@
+{{- $page := . -}}
+{{- $extensions := $page.Params.extensions | default slice -}}
+{{- if not (reflect.IsSlice $extensions) -}}{{- $extensions = slice $extensions -}}{{- end -}}
+{{- with $page.Params.extension -}}{{- $extensions = $extensions | append . -}}{{- end -}}
+{{- if $extensions -}}
+<div class="moments-extensions">
+  {{- range $extension := $extensions -}}
+    {{- $rawType := upper (printf "%v" $extension.type) -}}
+    {{- $type := lower $rawType -}}
+    {{- if eq $rawType "GITHUBPROJ" }}{{- $type = "github" -}}{{- end -}}
+    {{- $payload := $extension.payload -}}
+    {{- if and $payload (in (slice "github" "website" "location" "music" "tweet" "video") $type) -}}
+      <div class="moments-extension moments-extension--{{ $type }}">
+        {{- if eq $type "github" -}}
+          <strong>GitHub 仓库</strong>
+          <span>{{ $payload.repo_url }}</span>
+          {{- with $payload.repo_url -}}<a class="moments-extension__link" href="{{ . | safeURL }}" target="_blank" rel="noopener noreferrer">查看仓库</a>{{- end -}}
+        {{- else if eq $type "website" -}}
+          <strong>{{ $payload.title | default "网站链接" }}</strong>
+          <span>{{ $payload.site }}</span>
+          {{- with $payload.site -}}<a class="moments-extension__link" href="{{ . | safeURL }}" target="_blank" rel="noopener noreferrer">打开网站</a>{{- end -}}
+        {{- else if eq $type "location" -}}
+          <strong>位置</strong>
+          <span>{{ $payload.placeholder | default ($payload.name | default "地点") }}{{ with $payload.latitude }} · {{ . }}, {{ $payload.longitude }}{{ end }}</span>
+          {{- if and $payload.latitude $payload.longitude -}}
+            <a class="moments-extension__link" href="https://www.openstreetmap.org/?mlat={{ $payload.latitude }}&amp;mlon={{ $payload.longitude }}" target="_blank" rel="noopener noreferrer">在地图中查看</a>
+            <small class="moments-extension__attribution">© OpenStreetMap contributors</small>
+          {{- end -}}
+        {{- else if eq $type "music" -}}
+          <strong>音乐</strong>
+          <span>{{ $payload.title | default ($payload.name | default "音乐链接") }}</span>
+          {{- with $payload.url -}}<a class="moments-extension__link" href="{{ . | safeURL }}" target="_blank" rel="noopener noreferrer">打开音乐链接</a>{{- end -}}
+        {{- else if eq $type "tweet" -}}
+          <strong>X / Twitter</strong>
+          <span>{{ $payload.username | default "原动态" }}</span>
+          {{- with $payload.url -}}<a class="moments-extension__link" href="{{ . | safeURL }}" target="_blank" rel="noopener noreferrer">查看原动态</a>{{- end -}}
+        {{- else if eq $type "video" -}}
+          <strong>{{ if hasPrefix (printf "%v" $payload.videoId) "BV" }}Bilibili{{ else }}YouTube{{ end }}</strong>
+          <span>视频扩展</span>
+          {{- with $payload.videoId -}}<a class="moments-extension__link" href="{{ if hasPrefix (printf "%v" .) "BV" }}https://www.bilibili.com/video/{{ . }}{{ else }}https://www.youtube.com/watch?v={{ . }}{{ end }}" target="_blank" rel="noopener noreferrer">打开视频</a>{{- end -}}
+        {{- end -}}
+      </div>
+    {{- end -}}
+  {{- end -}}
+</div>
+{{- end -}}

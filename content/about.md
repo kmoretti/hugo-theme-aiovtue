@@ -6,6 +6,12 @@ cover: "/hero/hero-2.png"
 date: 2026-06-05
 tocStartLevel: 2
 tocEndLevel: 3
+# 保留 cover 作为 SEO/Open Graph 图片，不在新关于页 Hero 中显示
+comment: false
+musicPlayer: false
+live2d: false
+mouse: false
+effects: false
 ---
 
 

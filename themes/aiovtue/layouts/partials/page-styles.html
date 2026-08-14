@@ -14,6 +14,12 @@
 
 {{- end -}}
 
+{{- if eq .Layout "about" -}}
+
+  {{- partial "stylesheet.html" (dict "name" "css/about.scss" "key" "about") -}}
+
+{{- end -}}
+
 {{- if eq .Section "gallery" -}}
 
   {{- partial "stylesheet.html" (dict "name" "css/gallery.scss" "key" "gallery") -}}
@@ -47,6 +53,12 @@
 {{- if or (eq .Section "moments") (eq .Layout "moments") -}}
 
   {{- partial "stylesheet.html" (dict "name" "css/moments.scss" "key" "moments") -}}
+
+{{- end -}}
+
+{{- if .IsHome -}}
+
+  {{- partial "stylesheet.html" (dict "name" "css/home-moments-ticker.scss" "key" "home-moments-ticker") -}}
 
 {{- end -}}
 

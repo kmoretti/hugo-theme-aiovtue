@@ -1,17 +1,85 @@
 {{ define "main" }}
-<article class="sakura-page sakura-post sakura-post-page sakura-about-page">
-  {{- partial "page-header.html" . -}}
-  <div class="sakura-triple-columns-base sakura-triple-columns sakura-triple-columns--no-toc">
-    <aside class="sakura-post-aside-left" aria-hidden="true"></aside>
-    <div class="sakura-post-main">
-      <div class="sakura-page-content sakura-post-body">
-        {{- partial "post-content.html" . -}}
-        {{- partial "sponsor.html" . -}}
-        {{ if ne .Params.comment false }}
-        {{- partial "comment-section.html" . -}}
-        {{ end }}
-      </div>
+{{- $about := .Site.Params.about | default dict -}}
+{{- $author := .Site.Params.author | default dict -}}
+{{- $hero := .Site.Params.hero | default dict -}}
+{{- $lead := $about.lead | default dict -}}
+{{- $identity := $about.identity | default slice -}}
+{{- $personality := $about.personality | default dict -}}
+{{- $skills := $about.skills | default slice -}}
+{{- $hobbies := $about.hobbies | default slice -}}
+{{- $projects := $about.projects | default slice -}}
+{{- $focus := $about.focus | default slice -}}
+{{- $evaluation := $about.evaluation | default slice -}}
+{{- $commentEnable := default false $about.commentEnable -}}
+{{- if isset .Params "comment" }}{{ $commentEnable = .Params.comment }}{{ end -}}
+{{- $sponsorEnable := default true $about.sponsorEnable -}}
+{{- if isset .Params "sponsor" }}{{ $sponsorEnable = .Params.sponsor }}{{ end -}}
+<article class="sakura-page sakura-about-page">
+  <section class="about-hero" aria-labelledby="about-hero-title">
+    <span class="about-hero__orb about-hero__orb--one" aria-hidden="true"></span>
+    <span class="about-hero__orb about-hero__orb--two" aria-hidden="true"></span>
+    <span class="about-hero__orb about-hero__orb--three" aria-hidden="true"></span>
+    <div class="about-hero__content">
+      <img class="about-hero__avatar" src="{{ $about.avatar | default $author.avatar | relURL }}" alt="{{ $about.avatarAlt | default $about.name | default $author.name }} 的头像">
+      <h1 id="about-hero-title" class="about-hero__title">{{ $about.greeting | default "Hi! I'm" }} <span>{{ $about.name | default $author.name }}</span></h1>
+      <p class="about-hero__motto">{{ $about.motto | default $hero.motto }}</p>
     </div>
+  </section>
+
+  <div class="about-shell">
+    <section class="about-lead about-card">
+      <div class="about-lead__copy">
+        <span class="about-eyebrow">{{ $lead.eyebrow | default "About" }}</span>
+        <h2>{{ $lead.title | default (printf "你好，我是%s" ($about.name | default $author.name)) }}</h2>
+        <p>{{ $lead.description | default "记录技术实践、生活片段与持续学习，把零散的想法整理成可以分享的内容。" }}</p>
+        <div class="about-pill-list">
+          {{ range ($lead.tags | default (slice "Hugo" "Web" "自动化" "持续学习")) }}<span class="about-pill">{{ . }}</span>{{ end }}
+        </div>
+      </div>
+      <div class="about-lead__social">{{ range .Site.Params.social }}{{ if .link }}<a class="about-social-card" href="{{ .link }}" target="_blank" rel="noopener noreferrer">{{ partial "about-icon.html" (.icon | default "ri:link") }}<span>{{ .name }}</span></a>{{ end }}{{ end }}</div>
+    </section>
+
+    <div class="about-card-grid">
+      <section class="about-card about-card--profile">
+        {{ partial "about-panel-head.html" (dict "Kicker" "Identity" "Title" "基础信息") }}
+        <div class="about-info-list">{{ range $identity }}<div class="about-info-item"><span>{{ .label }}</span>{{ if .email }}<a href="mailto:{{ .email }}">{{ .value | default .email }}</a>{{ else }}<strong>{{ .value }}</strong>{{ end }}</div>{{ end }}</div>
+      </section>
+
+      <section class="about-card about-card--personality">
+        {{ partial "about-panel-head.html" (dict "Kicker" "Personality" "Title" "性格侧写") }}
+        <div class="about-personality-body">
+          <div class="about-personality-copy"><p class="about-personality-type">{{ $personality.type | default "持续探索" }}</p><h3>{{ $personality.name | default "思考者" }}</h3><p>{{ $personality.description | default "喜欢拆解问题，也喜欢把零散的灵感整理成清晰、可复用的内容。" }}</p><div class="about-pill-list">{{ range ($personality.tags | default (slice "好奇" "专注" "持续学习")) }}<span class="about-pill">{{ . }}</span>{{ end }}</div>{{ with $personality.url }}<a class="about-personality-link" href="{{ . }}" target="_blank" rel="noopener noreferrer">查看详情</a>{{ end }}</div>
+          <div class="about-personality-art"><img src="{{ $personality.image | default "https://jsd.268682.xyz/gh/zsxcoder/github-img@main/img/infj.avif" }}" alt="{{ $personality.name | default "性格" }} 插图"></div>
+        </div>
+      </section>
+
+      <section class="about-card about-card--skills">
+        {{ partial "about-panel-head.html" (dict "Kicker" "Capabilities" "Title" "技能与工具") }}
+        <div class="about-skills-list">{{ range $skills }}<span class="about-skill-chip">{{ partial "about-icon.html" (.icon | default "ri:code-s-slash-line") }}<span>{{ .name }}</span></span>{{ end }}</div>
+        <p class="about-card-note">{{ $about.skillsNote | default "正在持续学习中" }}</p>
+      </section>
+
+      <section class="about-card about-card--contact">
+        {{ partial "about-panel-head.html" (dict "Kicker" "Connect" "Title" "联系与兴趣") }}
+        <div class="about-social-grid">{{ range .Site.Params.social }}{{ if .link }}<a class="about-social-card" href="{{ .link }}" target="_blank" rel="noopener noreferrer">{{ partial "about-icon.html" (.icon | default "ri:link") }}<span>{{ .name }}</span></a>{{ end }}{{ end }}</div>
+        <div class="about-pill-list about-hobby-list">{{ range ($hobbies | default (slice "阅读" "写作" "编程" "摄影")) }}<span class="about-pill">{{ . }}</span>{{ end }}</div>
+      </section>
+
+      <section class="about-card about-card--projects">
+        {{ partial "about-panel-head.html" (dict "Kicker" "Projects" "Title" "在做的事") }}
+        <div class="about-project-list">{{ range $projects }}<a class="about-project-item" href="{{ .url }}" target="_blank" rel="noopener noreferrer"><span>Project</span><strong>{{ .name }}</strong><p>{{ .description }}</p></a>{{ end }}</div>
+        <div class="about-focus"><span class="about-focus__label">近期节奏</span><div class="about-focus-grid">{{ range $focus }}<div class="about-focus-item"><strong>{{ .title }}</strong><p>{{ .description }}</p></div>{{ end }}</div></div>
+      </section>
+
+      <section class="about-card about-card--evaluation">
+        {{ partial "about-panel-head.html" (dict "Kicker" "Snapshot" "Title" "自我评价") }}
+        <div class="about-evaluation-list">{{ range $evaluation }}<div class="about-evaluation-item"><span>{{ .label }}</span><p>{{ .text }}</p></div>{{ end }}</div>
+      </section>
+    </div>
+
+    <div class="about-markdown sakura-page-content">{{ partial "post-content.html" . }}</div>
+    {{ if $sponsorEnable }}{{ partial "sponsor.html" . }}{{ end }}
+    {{ if $commentEnable }}{{ partial "comment-section.html" . }}{{ end }}
   </div>
 </article>
 {{ end }}

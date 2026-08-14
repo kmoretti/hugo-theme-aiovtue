@@ -4,5 +4,7 @@
 {{- end -}}
 {{- if isset .Params "mouse" -}}
   {{- $enabled = .Params.mouse -}}
+{{- else if and (eq .Layout "about") (isset site.Params.about "mouseEnable") -}}
+  {{- $enabled = site.Params.about.mouseEnable -}}
 {{- end -}}
 {{- return $enabled -}}

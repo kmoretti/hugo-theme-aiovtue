@@ -1,48 +1,112 @@
 {{ define "main" }}
 {{- $entries := .Pages.ByDate.Reverse -}}
-{{- $layout := default "memos" site.Params.moments.layout -}}
-{{- $cardMaxWidth := default "720px" site.Params.moments.cardMaxWidth -}}
+{{- $moments := site.Params.moments -}}
+{{- $layout := default "memos" $moments.layout -}}
+{{- $cardMaxWidth := default "720px" $moments.cardMaxWidth -}}
+{{- $source := default "local" $moments.source -}}
+{{- if not (in (slice "local" "remote" "both") $source) -}}{{- $source = "local" -}}{{- end -}}
+{{- $provider := default "ech0" $moments.provider -}}
+{{- if not (in (slice "ech0" "blog_api") $provider) -}}{{- $provider = "ech0" -}}{{- end -}}
+{{- $remoteURL := default "https://m.081531.xyz" $moments.remoteURL -}}
+{{- $remoteEndpoint := default "/api/echo/query" $moments.remoteEndpoint -}}
+{{- $remoteMaxItems := default 40 $moments.remoteMaxItems -}}
+{{- if lt $remoteMaxItems 1 -}}{{- $remoteMaxItems = 40 -}}{{- end -}}
+{{- $batchSize := default 5 $moments.batchSize -}}
+{{- if lt $batchSize 1 -}}{{- $batchSize = 5 -}}{{- end -}}
 {{- $avatar := site.Params.author.avatar | default (site.Params.favicon | default `/favicon.png`) -}}
 {{- $authorName := site.Params.author.name | default site.Title -}}
 {{- $initialCount := 5 -}}
-{{- $loadBatch := 5 -}}
 {{- $visible := first $initialCount $entries -}}
 {{- $remaining := after $initialCount $entries -}}
-<article class="sakura-page sakura-moments-page sakura-moments-page--{{ $layout }}">
+{{- $localItems := slice -}}
+{{- range $page := $entries -}}
+  {{- $parsed := partial "moments/parse-content.html" $page -}}
+  {{- $extensions := $page.Params.extensions | default slice -}}
+  {{- if not (reflect.IsSlice $extensions) -}}{{- $extensions = slice $extensions -}}{{- end -}}
+  {{- with $page.Params.extension -}}{{- $extensions = $extensions | append . -}}{{- end -}}
+  {{- $commentEnabled := ne $page.Params.comment false -}}
+  {{- $localItems = $localItems | append (dict
+    "source" "local"
+    "sourceId" $page.File.UniqueID
+    "content" $parsed.text
+    "contentHTML" ($parsed.text | markdownify)
+    "date" $page.Date.Unix
+    "dateISO" ($page.Date.Format "2006-01-02T15:04:05Z07:00")
+    "permalink" $page.RelPermalink
+    "photos" $parsed.photos
+    "extensions" $extensions
+    "commentEnabled" $commentEnabled
+    "commentPath" (partial "moments/comment-path.html" $page)
+    "commentId" $page.File.UniqueID
+  ) -}}
+{{- end -}}
+<article
+  class="sakura-page sakura-moments-page sakura-moments-page--{{ $layout }}"
+  data-moments-source="{{ $source }}"
+  data-moments-layout="{{ $layout }}"
+  data-moments-provider="{{ $provider }}"
+  data-moments-author="{{ $authorName }}"
+  data-moments-avatar="{{ $avatar }}"
+  data-moments-card-max-width="{{ $cardMaxWidth }}"
+  data-moments-remote-url="{{ $remoteURL }}"
+  data-moments-remote-endpoint="{{ $remoteEndpoint }}"
+  data-moments-cache-minutes="{{ default 30 $moments.cacheMinutes }}"
+  data-moments-meting-api="{{ default "https://meting.081531.xyz/api" $moments.metingAPI }}"
+  data-moments-twitter-widgets="{{ default true $moments.enableTwitterWidgets }}"
+  data-moments-media-origins="{{ (default (slice $remoteURL) $moments.mediaOrigins) | jsonify }}"
+  data-moments-remote-max-items="{{ $remoteMaxItems }}"
+  data-moments-batch-size="{{ $batchSize }}"
+  data-moments-reactions="{{ default true $moments.enableRemoteReactions }}"
+  data-moments-likes="{{ default true $moments.enableRemoteLikes }}"
+  data-moments-reaction-verification="{{ default true $moments.enableRemoteReactionVerification }}"
+  data-moments-comments="{{ default true $moments.enableRemoteComments }}"
+  data-moments-comment-provider="{{ default "twikoo" site.Params.comment.provider }}"
+  data-moments-source-badge="{{ default true $moments.showSourceBadge }}"
+  data-moments-tags="{{ default true $moments.showRemoteTags }}"
+  data-moments-message-link="{{ default true $moments.showRemoteMessageLink }}"
+  data-moments-ad-badge="{{ default true $moments.showRemoteAdBadge }}"
+  data-moments-telegram-enabled="{{ default false $moments.telegramEnabled }}"
+  data-moments-telegram-url="{{ default "" $moments.telegramURL }}"
+  data-moments-telegram-max-items="{{ default 40 $moments.telegramMaxItems }}"
+  data-moments-telegram-page-size="{{ default 20 $moments.telegramPageSize }}"
+  data-moments-telegram-cache-minutes="{{ default 30 $moments.telegramCacheMinutes }}"
+>
   {{- partial "page-header.html" . -}}
-  <div class="moments-page moments-page--{{ $layout }}"{{ if eq $layout "cards" }} style="--moments-card-max-width: {{ $cardMaxWidth }};"{{ end }}>
+  <div class="moments-page moments-page--{{ $layout }}"{{ if in (slice "cards" "ech0") $layout }} style="--moments-card-max-width: {{ $cardMaxWidth }};"{{ end }}>
+    {{- if ne $source "local" -}}
+      <div class="moments-remote-toolbar" aria-live="polite">
+        <p class="moments-feed__status moments-remote-status" data-moments-status="loading">正在加载远程动态…</p>
+        <div class="moments-remote-toolbar__actions">
+          <button type="button" class="moments-remote-refresh" data-moments-action="refresh" hidden>刷新远程动态</button>
+          <button type="button" class="moments-remote-load-more" data-moments-action="load-more" hidden>加载更多</button>
+        </div>
+      </div>
+    {{- end -}}
     <div class="moments-feed" id="moments-feed">
-      {{- if not $entries -}}
-        <p class="moments-feed__empty">还没有动态，去 content/moments/ 新建 Markdown 文件吧。</p>
-      {{- else -}}
-        {{- range $index, $page := $visible -}}
-          {{- partial "moments/page-entry.html" (dict
-            "page" $page
-            "index" $index
-            "layout" $layout
-            "avatar" $avatar
-            "authorName" $authorName
-          ) -}}
-        {{- end -}}
-        {{- if $remaining -}}
-          <div id="moments-more-data" hidden>
-            {{- range $index, $page := $remaining -}}
-              <template class="moments-more-item">
-                {{- partial "moments/page-entry.html" (dict
-                  "page" $page
-                  "index" (add $initialCount $index)
-                  "layout" $layout
-                  "avatar" $avatar
-                  "authorName" $authorName
-                ) -}}
-              </template>
-            {{- end -}}
-          </div>
-          <div class="moments-feed__sentinel" id="moments-feed-sentinel" data-batch-size="{{ $loadBatch }}" aria-hidden="true"></div>
-          <p class="moments-feed__status" id="moments-feed-status" hidden aria-live="polite"></p>
+      {{- if eq $source "local" -}}
+        {{- if not $entries -}}
+          <p class="moments-feed__empty">还没有动态，去 content/moments/ 新建 Markdown 文件吧。</p>
+        {{- else -}}
+          {{- range $index, $page := $visible -}}
+            {{- partial "moments/page-entry.html" (dict "page" $page "index" $index "layout" $layout "avatar" $avatar "authorName" $authorName) -}}
+          {{- end -}}
+          {{- if $remaining -}}
+            <div id="moments-more-data" hidden>
+              {{- range $index, $page := $remaining -}}
+                <template class="moments-more-item">
+                  {{- partial "moments/page-entry.html" (dict "page" $page "index" (add $initialCount $index) "layout" $layout "avatar" $avatar "authorName" $authorName) -}}
+                </template>
+              {{- end -}}
+            </div>
+            <div class="moments-feed__sentinel" id="moments-feed-sentinel" data-batch-size="{{ $batchSize }}" aria-hidden="true"></div>
+            <p class="moments-feed__status" id="moments-feed-status" hidden aria-live="polite"></p>
+          {{- end -}}
         {{- end -}}
       {{- end -}}
     </div>
+    {{- if ne $source "local" -}}
+      <script type="application/json" id="moments-local-data">{{ $localItems | jsonify | safeJS }}</script>
+    {{- end -}}
   </div>
 </article>
 {{ end }}

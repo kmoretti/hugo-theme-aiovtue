@@ -1,7 +1,8 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
-import { isLinksRssEnabled, writeEmptyLinksRss } from './lib/links-rss-config.mjs'
+import { getLinksDataSource, isLinksRssEnabled, writeEmptyLinksRss } from './lib/links-rss-config.mjs'
 import { hasEnoughRssBody } from './lib/rss-article-body.mjs'
+import { parseLinksYaml } from './lib/links-yaml.mjs'
 
 const ROOT = join(import.meta.dirname, '..')
 const LINKS_YAML = join(ROOT, 'data', 'links.yaml')
@@ -130,6 +131,14 @@ async function fetchText(url) {
   }
 }
 
+function parseRemoteLinksPayload(text) {
+  try {
+    return JSON.parse(text)
+  } catch {
+    return parseLinksYaml(text)
+  }
+}
+
 function unquote(value) {
   const text = String(value || '').trim()
   if (
@@ -204,9 +213,27 @@ function parseFirstGroupRssLinks(yamlText) {
   return links.filter((item) => /^https?:\/\//i.test(String(item.rss || '').trim()))
 }
 
-async function buildLinksRssData() {
-  const yamlText = readFileSync(LINKS_YAML, 'utf8')
-  const sources = parseFirstGroupRssLinks(yamlText)
+function parseRemoteRssLinks(payload) {
+  if (!Array.isArray(payload?.linkGroups)) {
+    throw new Error('remote friend data must contain linkGroups')
+  }
+
+  return payload.linkGroups.flatMap((group) =>
+    (Array.isArray(group?.links) ? group.links : [])
+      .map((link) => ({
+        url: String(link?.url || '').trim(),
+        name: String(link?.name || '').trim(),
+        blog: String(link?.blog || link?.name || '').trim(),
+        desc: String(link?.desc || '').trim(),
+        color: String(link?.color || '#0078e7').trim(),
+        avatar: String(link?.avatar || '').trim(),
+        rss: String(link?.rss || '').trim(),
+      }))
+      .filter((link) => /^https?:\/\//i.test(link.rss)),
+  )
+}
+
+async function buildLinksRssData(sources) {
   const feeds = []
 
   for (const source of sources) {
@@ -244,6 +271,17 @@ if (!isLinksRssEnabled(ROOT)) {
   process.exit(0)
 }
 
-const data = await buildLinksRssData()
+const linksSource = getLinksDataSource(ROOT)
+let sources
+if (linksSource.type === 'remote') {
+  const payload = parseRemoteLinksPayload(await fetchText(linksSource.url))
+  sources = parseRemoteRssLinks(payload)
+  console.log(`[links-rss] using remote friend source: ${linksSource.url}`)
+} else {
+  const yamlText = readFileSync(LINKS_YAML, 'utf8')
+  sources = parseFirstGroupRssLinks(yamlText)
+}
+
+const data = await buildLinksRssData(sources)
 writeFileSync(OUTPUT, `${JSON.stringify(data, null, 2)}\n`, 'utf8')
 console.log(`[links-rss] wrote ${data.feeds.length} feed(s) -> data/links_rss.json`)

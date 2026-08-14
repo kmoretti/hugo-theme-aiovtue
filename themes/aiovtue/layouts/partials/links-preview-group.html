@@ -28,6 +28,7 @@
           <div class="links-preview-hover-shot" aria-hidden="true">
             <img class="sakura-lazy-img" src="{{ $siteshot }}" alt="" loading="lazy" decoding="async">
           </div>
+          {{- partial "links-preview-tags.html" (dict "Tags" .tags) -}}
         </a>
         {{- else -}}
         <a class="links-preview-card" href="{{ .url }}" target="_blank" rel="friend noopener">
@@ -41,6 +42,7 @@
               <div class="links-preview-desc">{{ .desc }}</div>
             </div>
           </div>
+          {{- partial "links-preview-tags.html" (dict "Tags" .tags) -}}
         </a>
         {{- end -}}
       </li>

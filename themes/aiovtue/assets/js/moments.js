@@ -1,5 +1,6 @@
 import { mountMomentCommentPanel } from './comments.js'
 import { formatRelativeTime } from './utils.js'
+import { initRemoteMomentsPage } from './remote-moments.js'
 
 function primeMomentVideoThumb(video) {
   if (!video || video.dataset.thumbReady === '1') return
@@ -17,7 +18,7 @@ function primeMomentVideoThumb(video) {
 
 function bindMoments(root) {
   if (!root) return
-  root.querySelectorAll('.travel-moment__photo video, .moments-card__photo video').forEach(primeMomentVideoThumb)
+  root.querySelectorAll('.travel-moment__photo video, .moments-card__photo video, .moments-media video').forEach(primeMomentVideoThumb)
 }
 
 function initMomentsTimes(root) {
@@ -155,10 +156,23 @@ export function initMomentsPage() {
 
   bindMoments(page)
   initMomentsTimes(page)
-  const cleanupComments = initMomentsComments(page)
-  const cleanupLoadMore = initMomentsLoadMore(page)
+  const isRemoteSource = ['remote', 'both'].includes(page.dataset.momentsSource)
+  const cleanupComments = isRemoteSource ? () => {} : initMomentsComments(page)
+  const cleanupLoadMore = isRemoteSource ? () => {} : initMomentsLoadMore(page)
+  let remoteCleanup = () => {}
+  let destroyed = false
+
+  if (isRemoteSource) {
+    void initRemoteMomentsPage(page).then((cleanup) => {
+      if (destroyed) cleanup()
+      else remoteCleanup = cleanup
+    })
+  }
 
   return () => {
+    destroyed = true
+    page.__momentsRemoteController?.abort()
+    remoteCleanup()
     cleanupComments()
     cleanupLoadMore()
   }

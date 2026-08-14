@@ -1,4 +1,10 @@
-{{- $data := hugo.Data.links -}}
+{{- $source := lower (default "local" site.Params.links.source) -}}
+{{- if eq $source "remote" -}}
+  {{- .Scratch.Set "footerLinksG1" (slice) -}}
+  {{- .Scratch.Set "footerLinksG2" (slice) -}}
+  {{- .Scratch.Set "footerLinksAll" (slice) -}}
+{{- else -}}
+{{- $data := .Site.Data.links -}}
 {{- $groups := $data.linkGroups | default slice -}}
 {{- $g1 := index $groups 0 -}}
 {{- $g2 := index $groups 1 -}}
@@ -28,4 +34,5 @@
 {{- .Scratch.Set "footerLinksG1" $g1items -}}
 {{- .Scratch.Set "footerLinksG2" $g2items -}}
 {{- .Scratch.Set "footerLinksAll" $all -}}
+{{- end -}}
 {{- end -}}

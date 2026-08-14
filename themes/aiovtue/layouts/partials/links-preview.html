@@ -1,7 +1,26 @@
-{{ $layout := default "preview" site.Params.links.layout }}
-{{ $data := hugo.Data.links }}
-<div class="links-preview" data-shuffle-groups="{{ $data.shuffleGroups | default true }}">
-  {{ range $data.linkGroups }}
-  {{- partial "links-preview-group.html" (dict "Group" . "PageLayout" $layout) -}}
-  {{ end }}
+{{- $layout := default "preview" site.Params.links.layout -}}
+{{- $source := lower (default "local" site.Params.links.source) -}}
+{{- if eq $source "remote" -}}
+<div
+  class="links-preview links-preview--remote"
+  id="links-preview-remote"
+  data-remote-url="{{ site.Params.links.remoteURL | safeURL }}"
+  data-layout="{{ $layout }}"
+  data-default-cover="{{ site.Params.defaultCover | default `/hero/tt3.png` | relURL }}"
+  aria-live="polite"
+>
+  <p class="links-preview-remote__status links-preview-remote__status--loading" data-remote-status="loading">正在加载远程友链…</p>
+  <div class="links-preview-remote__error" data-remote-status="error" hidden>
+    <p>远程友链暂时无法加载，请稍后重试。</p>
+    <button type="button" class="links-preview-remote__retry">重新加载</button>
+  </div>
+  <div class="links-preview-remote__content" data-remote-status="content" hidden></div>
 </div>
+{{- else -}}
+{{- $data := .Site.Data.links -}}
+<div class="links-preview" data-shuffle-groups="{{ $data.shuffleGroups | default true }}">
+  {{- range $data.linkGroups -}}
+  {{- partial "links-preview-group.html" (dict "Group" . "PageLayout" $layout) -}}
+  {{- end -}}
+</div>
+{{- end -}}

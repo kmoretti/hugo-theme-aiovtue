@@ -46,6 +46,7 @@
     data-cards-batch-size="{{ $cardsBatchSize }}"
     data-home-paginator-page="{{ $paginator.PageNumber }}"
   >
+    {{- partial "home-moments-ticker.html" . -}}
     {{- if and $featuredPool $layoutPool.listColumnsRandom -}}
       <div class="home-list-featured-mount">
         {{- partial "home-list-featured.html" (dict "Pool" $featuredPool) -}}

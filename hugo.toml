@@ -30,10 +30,10 @@
 # =============================================================================
 
 # 站点正式访问地址（影响 sitemap、RSS、分享链接等绝对 URL，部署前务必与真实域名一致）
-baseURL = 'https://daily.yybb.us/'
-locale = 'zh-cn'
-defaultContentLanguage = 'zh'
-title = 'AIOVTUE-雪'          # 站点名称（浏览器标题、页脚版权等）
+baseURL = 'https://blog.kemiaosw.top/'  # 站点根 URL
+locale = 'zh-cn'                            # 站点区域/语言标识（影响 HTML lang 属性、日期格式等）
+defaultContentLanguage = 'zh'               # 默认内容语言（多语言站点时的主语言）
+title = '喵洛阁'          # 站点名称（浏览器标题、页脚版权等）
 theme = 'aiovtue'           # 主题目录：themes/aiovtue/
 hasCJKLanguage = true      # 启用中文分词（搜索、摘要等）
 enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layouts/robots.txt）
@@ -41,8 +41,8 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
 # --- 站点地图（sitemap.xml）---
 [sitemap]
   changefreq = 'weekly'    # 更新频率提示
-  priority = 0.5
-  filename = 'sitemap.xml'
+  priority = 0.5           # 站点地图中页面的默认优先级（0~1，越大越重要）
+  filename = 'sitemap.xml' # 生成的站点地图文件名
 
 # --- 分页（首页文章列表）---
 [pagination]
@@ -55,8 +55,8 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
 
 # --- 输出格式（首页与文章栏目额外生成 RSS）---
 [outputs]
-  home = ['HTML', 'RSS']
-  section = ['HTML', 'RSS']
+  home = ['HTML', 'RSS']       # 首页输出 HTML 与 RSS
+  section = ['HTML', 'RSS']    # 栏目页（如 posts/、categories/）输出 HTML 与 RSS
 
 # --- Markdown 渲染 ---
 [markup]
@@ -68,32 +68,32 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
         enable = true      # 保留 LaTeX 分隔符，由 passthrough render hook + KaTeX 构建时渲染
         # 块级公式 $$ 结束后若紧跟 --- 分隔线，中间必须空一行，否则 Goldmark 会误解析为标题
         [markup.goldmark.extensions.passthrough.delimiters]
-          block = [['\[', '\]'], ['$$', '$$']]
-          inline = [['\(', '\)'], ['$', '$']]
+          block = [['\[', '\]'], ['$$', '$$']]   # 块级 LaTeX 公式分隔符
+          inline = [['\(', '\)'], ['$', '$']]   # 行内 LaTeX 公式分隔符
   [markup.highlight]
     style = "github"       # 代码高亮主题
-    noClasses = false
-    lineNos = false
-    tabWidth = 4
+    noClasses = false      # 是否不使用 CSS 类名而直接输出内联样式（false = 使用类名，便于自定义主题）
+    lineNos = false        # 是否显示代码行号
+    tabWidth = 4           # 代码中 Tab 字符渲染为空格的宽度
   [markup.tableOfContents]
     startLevel = 2         # 目录从 h2 开始
     endLevel = 4           # 目录至 h4，不显示 h5/h6
-    ordered = false
+    ordered = false        # 目录使用无序列表（false）或有序列表（true）
 
 # --- 资源类型：将 .excalidraw 识别为 JSON page bundle 资源 ---
 [mediaTypes]
   [mediaTypes."application/json"]
-    suffixes = ["json", "excalidraw"]
+    suffixes = ["json", "excalidraw"]  # 将该媒体类型的后缀扩展到 excalidraw，使其可作为 page bundle 资源
 
 # =============================================================================
 # 站点参数（主题通过 .Site.Params 读取）
 # =============================================================================
 [params]
-  subtitle = '雪'                              # 副标题（首页标题后缀）
-  description = '雨是神的烟花'                  # 站点默认描述（SEO、分享卡片）
-  primaryColor = '#DF9193'                     # 主题主色
-  favicon = '/hero/avatar.png'
-  defaultCover = '/hero/tt3.png'               # 文章默认头图（无 cover 时使用）
+  subtitle = '<K.M/>'                              # 副标题（首页标题后缀）
+  description = '克喵的小站'                  # 站点默认描述（SEO、分享卡片）
+  primaryColor = '#E5A84B'                     # 主题主色
+  favicon = '/favicon.ico'                 # 站点图标路径（浏览器标签页、收藏夹）
+  defaultCover = 'https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/bg.webp'               # 文章默认头图（无 cover 时使用）
   math = false                                 # 默认关闭；单篇 front matter 写 math: true 启用构建时 KaTeX 渲染
   postIndent = true                            # 文章/关于页正文首行缩进 2em（单篇可写 indent: false 关闭）
 
@@ -104,13 +104,39 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
   # --- 友链页 ---
   [params.links]
     layout = 'preview'                        # preview：卡片截图 | simple：长条头像+悬停预览
-    rssEnable = true                         # 友链页「朋友动态」RSS 展示（关闭时不拉取 RSS）
+    source = 'remote'                         # local：data/links.yaml | remote：浏览器实时读取 remoteURL
+    remoteURL = 'https://cdn.jsdmirror.com/gh/kmoretti/hexo-blog-source@main/source/_data/links.yml' # 远程友链数据源（支持 JSON / YAML）
+    applicationAPI = 'https://verify.081531.xyz' # friendlink-verify 友链申请与审核状态 API
+    rssEnable = true                          # 友链页「朋友动态」RSS 展示（关闭时不拉取 RSS）
     footerEnable = false                      # 全站页脚友链列表展示
 
-  # --- 动态页（每条动态：content/moments/*.md，front matter 仅需 date）---
+  # --- 动态页（每条动态：content/moments/*.md，front matter 至少需要 date）---
   [params.moments]
-    layout = "memos"                          # memos：头像时间线 | cards：居中卡片
-    cardMaxWidth = "720px"                    # cards 模式下列表最大宽度
+    layout = "ech0"                           # ech0：Ech0 风格卡片 | memos：头像时间线 | cards：居中卡片
+    cardMaxWidth = "720px"                    # cards/ech0 模式下列表最大宽度
+    source = "both"                           # local：仅本地 | remote：仅远程 | both：混合
+    provider = "ech0"                         # ech0：Ech0 API | blog_api：兼容旧远程 moments API
+    remoteURL = "https://m.081531.xyz"        # Ech0 站点根地址；blog_api provider 使用完整 API 地址
+    remoteEndpoint = "/api/echo/query"        # Ech0 查询 endpoint（浏览器端 POST）
+    remoteMaxItems = 40                        # 远程首批最多纳入的动态数
+    batchSize = 5                              # 动态列表每批插入 DOM 的数量
+    cacheMinutes = 30                          # Ech0 远程数据 localStorage 缓存时长
+    mediaOrigins = ["https://m.081531.xyz", "https://mifun.081531.xyz"] # 允许的远程媒体来源
+    metingAPI = "https://meting.081531.xyz/api" # Ech0 MUSIC 扩展使用的 Meting API
+    enableTwitterWidgets = true               # Tweet 扩展优先尝试官方 widgets.js，失败则静态降级
+    enableRemoteReactions = true               # blog_api provider 的旧 reactions
+    enableRemoteReactionVerification = true    # blog_api provider 的 AntiBot/Fingerprint/Turnstile
+    enableRemoteLikes = true                   # Ech0 provider 的单向点赞
+    enableRemoteComments = true                # Ech0 公开评论只读；blog_api 兼容旧入口
+    showSourceBadge = true                     # 是否显示“本地/Ech0”来源标签
+    showRemoteTags = true                      # 是否显示远程 tags
+    showRemoteMessageLink = true               # 是否显示远程原消息链接
+    showRemoteAdBadge = true                   # 兼容旧 API 的推广标识；Ech0 不提供广告字段
+    telegramEnabled = true                     # 是否加载 Telegram 频道说说
+    telegramURL = "https://tg-channel.081531.xyz/api/posts" # Telegram 频道 API（浏览器端 GET）
+    telegramMaxItems = 40                      # Telegram 首批最多纳入的动态数
+    telegramPageSize = 20                      # Telegram API 每页读取数量
+    telegramCacheMinutes = 30                  # Telegram 只读数据 localStorage 缓存时长
 
   # --- 追番页（Bilibili 追番列表，构建时拉取 data/bangumi.json）---
   [params.bangumi]
@@ -123,56 +149,140 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
 
   # --- 全站加载动画（首页进入时的樱花加载页）---
   [params.loader]
-    enable = true
+    enable = true          # 是否启用首页加载动画
     minShow = 0            # 最短显示时间（毫秒）
     maxDuration = 6000     # 最长等待时间（毫秒）
 
   # --- 侧栏 / 关于页作者信息 ---
   [params.author]
-    name = '作者名称'
-    avatar = '/hero/avatar.png'
+    name = '克喵Moretti'      # 作者显示名称（侧栏、关于页、页脚签名等）
+    avatar = '/hero/avatar.png'  # 作者头像路径
     statusEmoji = '🌸'     # 头像角标
-    statusMessage = '发呆ing...'
+    statusMessage = '摸鱼ing...'  # 头像旁状态文字
+
+  # --- 关于页（layout: about）---
+  # 结构化资料配置；about.md 继续承载页面底部的自由 Markdown 内容。
+  [params.about]
+    greeting = "Hi! I'm"
+    name = '克喵Moretti'
+    avatarAlt = '克喵Moretti'
+    motto = '保持好奇，把想法写成可以分享的内容。'
+    commentEnable = false
+    sponsorEnable = true
+    musicEnable = false
+    live2dEnable = false
+    mouseEnable = false
+    effectsEnable = false
+    skillsNote = '正在持续学习中'
+    hobbies = ['阅读', '写作', '编程', '摄影']
+    [params.about.lead]
+      eyebrow = 'About'
+      title = '你好，我是克喵Moretti'
+      description = '记录技术实践、生活片段与持续学习，把零散的想法整理成可以分享的内容。'
+      tags = ['Hugo', 'Web', '自动化', '持续学习']
+    [params.about.personality]
+      type = 'INFJ'
+      name = '提倡者'
+      description = '喜欢观察细节、整理思路，也愿意把长期兴趣变成持续积累的作品。'
+      image = 'https://jsd.268682.xyz/gh/zsxcoder/github-img@main/img/infj.avif'
+      tags = ['好奇', '专注', '持续学习']
+      url = 'https://www.16personalities.com/'
+    [[params.about.identity]]
+      label = '昵称'
+      value = '克喵Moretti'
+    [[params.about.identity]]
+      label = '身份'
+      value = '独立开发者 / 博客作者'
+    [[params.about.identity]]
+      label = '方向'
+      value = 'Web 与自动化'
+    [[params.about.identity]]
+      label = '所在地'
+      value = '中国'
+    [[params.about.identity]]
+      label = '邮箱'
+      value = 'mcy@kemiaosw.top'
+      email = 'mcy@kemiaosw.top'
+    [[params.about.identity]]
+      label = '状态'
+      value = '摸鱼ing...'
+    [[params.about.skills]]
+      name = 'Hugo'
+      icon = 'ri:terminal-box-line'
+    [[params.about.skills]]
+      name = 'HTML'
+      icon = 'ri:html5-line'
+    [[params.about.skills]]
+      name = 'CSS'
+      icon = 'ri:css3-line'
+    [[params.about.skills]]
+      name = 'JavaScript'
+      icon = 'ri:javascript-line'
+    [[params.about.skills]]
+      name = 'Git'
+      icon = 'ri:git-branch-line'
+    [[params.about.skills]]
+      name = 'Markdown'
+      icon = 'ri:markdown-line'
+    [[params.about.projects]]
+      name = '喵洛阁'
+      url = '/'
+      description = '记录技术实践、生活片段和持续学习的个人空间。'
+    [[params.about.projects]]
+      name = 'Blog API'
+      url = 'https://github.com/kmoretti/blog_api'
+      description = '为博客提供友链、动态等内容的数据服务。'
+    [[params.about.focus]]
+      title = '站点体验'
+      description = '持续打磨博客的页面、交互和组件细节。'
+    [[params.about.focus]]
+      title = '内容沉淀'
+      description = '把实践过程整理成更容易复用的文章。'
+    [[params.about.focus]]
+      title = '工具探索'
+      description = '关注 Hugo、自动化与 AI 辅助开发。'
+    [[params.about.evaluation]]
+      label = '思想'
+      text = '保持开放和好奇，愿意从不同角度理解问题。'
+    [[params.about.evaluation]]
+      label = '工作'
+      text = '重视细节与可维护性，尽量把每次实践做成可靠的积累。'
+    [[params.about.evaluation]]
+      label = '总结'
+      text = '一个正在持续变好的普通人。'
 
   # --- 首页 Hero 大图 / 视频轮播 ---
   # 媒体文件放在 static/hero/，此处写 URL 路径（以 / 开头）
   
   
   
-  # grid 全站背景网格（仅 params.hero.style = 'grid' 时生效）
-  # size：单元格边长（px）；lineOpacity / lineOpacityDark：线条透明度 0~1，越大越深
-  [params.hero.grid]
-    size = 20
-    lineOpacity = 0.1
-    lineOpacityDark = 0.1
-
   [params.hero]
-    title = 'AIOVTUE'
-    motto = '雨是神的烟花'
+    title = '喵洛阁'      # Hero 大标题
+    motto = '每一段旅行，都有终点。'  # Hero 副标题/格言
     randomUrls = true      # 随机切换背景
     enableHitokoto = true  # 一言 API 随机格言
     typewriter = true      # 打字机效果
-    typewriterSpeed = 80
+    typewriterSpeed = 80   # 打字机速度（毫秒/字符）
     style = 'dot'          # 背景样式：dot / grid 等
-    fixedImg = true
-    playerUrl = '/hero/player.mp4'
+    fixedImg = true        # 背景图是否固定不随滚动移动
+    playerUrl = ''  # 默认视频播放器占位/预览视频路径
     urls = [
-      '/hero/tt3.png',
-      '/hero/tt1.png',
-      '/hero/tt2.png',
-      '/hero/sp1.mp4',
-      '/hero/hero-1.jpg', 
-      '/hero/hero-2.png', 
-      '/hero/hero-1.mp4',
-      '/hero/hero-2.mp4',
-      
+      'https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/bg.webp',
     ]
+
+    # grid 全站背景网格（仅 params.hero.style = 'grid' 时生效）
+    # size：单元格边长（px）；lineOpacity / lineOpacityDark：线条透明度 0~1，越大越深
+    [params.hero.grid]
+      size = 20                 # 网格单元格边长（像素）
+      lineOpacity = 0.1         # 浅色模式下网格线透明度
+      lineOpacityDark = 0.1     # 深色模式下网格线透明度
 
   # --- 页脚 ---
   [params.footer]
     since = 2024           # 版权起始年
-    runtimeSince = '2024-01-01'   # 站点运行倒计时起点（YYYY-MM-DD）
-    icp = '<a href="https://icp.gov.moe/?keyword=20260258" target="_blank" rel="noopener">萌ICP备20260258号</a>'
+    runtimeSince = '2024-11-01'   # 站点运行倒计时起点（YYYY-MM-DD）
+    icp = ''
+    # icp = '<a href="https://icp.gov.moe/?keyword=20260258" target="_blank" rel="noopener">萌ICP备20260258号</a>'  # 备案信息 HTML（可留空）
 
 # --- 首页公告栏（右侧域名列表）---
   # --- 首页文章列表布局 ---
@@ -207,76 +317,102 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
     # 下方配置不建议动，过大会影响网页性能
     featuredCount = 4           # list 模式推荐区同时可见卡片数
     featuredPoolCount = 12      # list 模式推荐区候选池（排序后取前 N 篇 SSR，供切换按钮轮换）
+
+    # --- 首页说说摘要条（数据源复用 params.moments）---
+    [params.home.momentsTicker]
+      enable = true             # 是否在 Hero 下方显示说说摘要条
+      maxItems = 5              # 首页最多轮换的动态条数
+      remoteMaxItems = 20       # both 模式最多请求的远程动态数
+      interval = 5000           # 自动切换间隔（毫秒）
+      autoPlay = true           # 是否默认自动切换
+      showSourceBadge = true    # 始终显示本地/远程来源
+      showResourceIcons = true  # 显示图片、定位、GitHub 等扩展提示
+      showTags = true           # 显示最多一个标签
+      showTime = true           # 显示相对时间
+      showAds = true            # 是否显示远程推广动态
+      showAdBadge = true        # 是否显示“推广”标识
     
   [params.notice]
-    title = '公告栏'
+    title = '公告栏'        # 公告栏标题
     rotateInterval = 5000  # 左侧随机文章轮播间隔（毫秒）
     [[params.notice.sections]]
-      label = '--- 主域名 ---'
-      lines = ['daily.yybb.us', 'day.yybb.us']
-    [[params.notice.sections]]
-      label = '--- 这是公告 ---'
-      lines = ['公告在配置文件中修改哦']
+      label = '--- 这是公告 ---'      # 公告分组标题
+      lines = ['欢迎来到我的博客！']  # 该分组下的公告内容行
 
   # --- 侧栏 / Hero 社交图标（icon 为 Iconify 图标名）---
   [[params.social]]
-    name = 'RSS'
-    link = '/index.xml'  # Hugo 默认 RSS 路径
-    icon = 'ri:rss-line'
-    color = 'orange'
+    name = 'RSS'           # 社交项显示名称
+    link = '/index.xml'    # Hugo 默认 RSS 路径
+    icon = 'ri:rss-line'   # Iconify 图标名
+    color = 'orange'       # 图标颜色
   [[params.social]]
-    name = 'GitHub'
-    link = 'https://github.com/AIOVTUE'
-    icon = 'ri:github-line'
-    color = '#6e5494'
+    name = 'GitHub'        # 社交项显示名称
+    link = 'https://s.081531.xyz/github'  # 链接地址
+    icon = 'ri:github-line'              # Iconify 图标名
+    color = '#6e5494'                    # 图标颜色
+  # [[params.social]]
+  #   name = '微信公众号'    # 社交项显示名称
+  #   link = '/hero/wxgzh.png'             # 二维码或链接图片路径
+  #   icon = 'ri:wechat-2-line'            # Iconify 图标名
+  #   color = '#1AAD19'                    # 图标颜色
   [[params.social]]
-    name = '微信公众号'
-    link = '/hero/wxgzh.png'
-    icon = 'ri:wechat-2-line'
-    color = '#1AAD19'
+    name = 'E-Mail'        # 社交项显示名称
+    link = 'mailto:mcy@kemiaosw.top'            # 邮箱链接
+    icon = 'ri:mail-line'                # Iconify 图标名
+    color = '#8E71C1'                    # 图标颜色
   [[params.social]]
-    name = 'E-Mail'
-    link = 'mailto:x@yybb.us'
-    icon = 'ri:mail-line'
-    color = '#8E71C1'
+    name = 'Telegram'        # 社交项显示名称
+    link = 'https://s.081531.xyz/telegram'            # 邮箱链接
+    icon = 'ri:telegram-line'                # Iconify 图标名
+    color = '#02E0F7'                    # 图标颜色
   [[params.social]]
-    name = 'Travelling'
-    link = 'https://www.travellings.cn/go.html'
-    icon = 'ri:train-line'
-    color = '#8cb1b3'
+    name = 'QQ'        # 社交项显示名称
+    link = 'https://s.081531.xyz/qq'            # 邮箱链接
+    icon = 'ri:qq-line'                # Iconify 图标名
+    color = '#028DF7'                    # 图标颜色
+  [[params.social]]
+    name = 'BiliBili'        # 社交项显示名称
+    link = 'https://s.081531.xyz/bilibili'            # 邮箱链接
+    icon = 'ri:bilibili-fill'                # Iconify 图标名
+    color = '#02F727'                    # 图标颜色
+  [[params.social]]
+    name = 'Travelling'    # 社交项显示名称
+    link = 'https://www.travellings.cn/go.html'  # 链接地址
+    icon = 'ri:train-line'                       # Iconify 图标名
+    color = '#8cb1b3'                            # 图标颜色
 
   # --- 归档 / 标签页 ECharts 图表 ---
   [params.charts]
-    archivesStartMonth = '2024-03'   # 归档图起始月份
+    archivesStartMonth = '2024-11'   # 归档图起始月份
     tagsChartLength = 10             # 标签图显示 Top N
 
   # --- 文章页底部赞助按钮 ---
   [params.sponsor]
-    enable = true
-    title = '我很可爱，请给我钱！'
-    description = '我很可爱哦，可以给我点钱钱嘛~'
+    enable = true                               # 是否显示文章页赞助按钮
+    title = '我很可爱，请给我钱！'              # 赞助区标题
+    description = '我很可爱哦，可以给我点钱钱嘛~'  # 赞助区描述
     [[params.sponsor.methods]]
-      name = '支付宝'
-      url = '/img/zfb.png'
-      color = '#00A3EE'
+      name = '支付宝'                           # 赞助方式名称
+      url = '/img/zhifubao.png'                      # 赞助二维码/链接图片路径
+      color = '#00A3EE'                         # 该方式主题色
     [[params.sponsor.methods]]
-      name = '微信支付'
-      url = '/img/weix.png'
-      color = '#2DC100'
+      name = '微信支付'                           # 赞助方式名称
+      url = '/img/weixin.png'                       # 赞助二维码/链接图片路径
+      color = '#2DC100'                           # 该方式主题色
 
   # --- 文章版权声明（CC 协议）---
   [params.license]
-    enable = true
+    enable = true          # 是否启用文章页版权声明
     type = 'by-nc-sa'      # CC 类型：by / by-nc / by-nc-sa / zero 等
-    language = 'zh'
+    language = 'zh'        # 版权声明语言
     
   # --- 动态手写签名（signature-inline）---
   # postCopyrightEnable：文章底部版权声明处的签名动画
   # footerEnable：全站页脚 copyright 区「by xxx」处的签名动画（关闭后显示 author.name 文字）
   # 不影响正文 Markdown 中 [签名](signature:) 的签名效果
   [params.signature]
-    postCopyrightEnable = false
-    footerEnable = false
+    postCopyrightEnable = false  # 是否在文章版权声明处显示手写签名动画
+    footerEnable = false         # 是否在页脚版权区显示手写签名动画
 
   # --- 文章页脚导航 ---
   [params.postFooter]
@@ -286,153 +422,154 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
   # provider 可选：waline | twikoo
   # 单篇文章可在 front matter 写 comment: false 关闭评论区
   [params.comment]
-    provider = 'twikoo'
+    provider = 'twikoo'    # 评论系统提供商：waline 或 twikoo
 
   # --- Waline 评论（https://waline.js.org/）---
   # 仅当 params.comment.provider = waline 时生效；当前使用 twikoo，此处留作切换备用
   [params.waline]
-    serverURL = 'https://your-waline-url'                                # 切换到 waline 时填写服务端地址（末尾不要加 /）
-    placeholder = '分享你的想法...'
+    serverURL = 'https://your-waline-url'   # 切换到 waline 时填写服务端地址（末尾不要加 /）
+    placeholder = '分享你的想法...'          # 评论框占位文字
 
   # --- Twikoo 评论（仅当 params.comment.provider = twikoo 时生效）---
   # 留空 envId 时评论区显示配置提示，不影响站点其它功能
   # visitorEnable：文章访问量统计（需 provider=twikoo 且已配置 envId）
   # COMMENT_PLACEHOLDER 请在 Twikoo 管理后台「配置」中设置
   [params.twikoo]
-    envId = 'https://your-twikoo-url'
+    envId = 'https://your-twikoo-url'   # Twikoo 服务端环境 ID 或地址
     visitorEnable = true   # 开启文章访问数量统计，基于twikoo
 
   # --- 留言页信封动画图片（文件在 static/envelope/）---
   [params.envelope]
-    before = '/envelope/before.png'
-    after = '/envelope/after.png'
-    cover = '/envelope/cover.png'
-    line = '/envelope/line.png'
-    wrapHeight = 447
-    openHeight = 1050
-    openOffset = -200
-    danmakuOpenBottomTrim = 140   # 信封展开时弹幕区域底部向上缩短（像素）
+    before = '/envelope/before.png'  # 信封闭合状态图片
+    after = '/envelope/after.png'    # 信封展开后背景图片
+    cover = '/envelope/cover.png'    # 信封封面图片
+    line = '/envelope/line.png'      # 信封装饰线图片
+    wrapHeight = 447                 # 信封闭合状态高度（像素）
+    openHeight = 1050                # 信封展开状态高度（像素）
+    openOffset = -200                # 信封展开时垂直偏移（像素）
+    danmakuOpenBottomTrim = 140      # 信封展开时弹幕区域底部向上缩短（像素）
 
   # --- 顶栏标题 ---
   [params.navbar]
-    titleParts = ['AIOVTUE-', '雪']   # 顶栏主标题分段（可产生动画效果）
-    subTitle = '雨是神的烟花'
-    offset = 0
+    titleParts = ['克喵', 'Moretti']   # 顶栏主标题分段（可产生动画效果）
+    subTitle = '<K.M/>'          # 顶栏副标题
+    offset = 0                         # 顶栏初始垂直偏移（像素）
 
     # 移动端下滑隐藏顶栏（默认首页不生效，设 includeHome = true 则全站含首页生效）
     [params.navbar.mobileCollapse]
-      enable = true
-      includeHome = false    # 是否包括主页
-      scrollThreshold = 5   # 滚动超过该距离后才允许隐藏（px）
-      scrollDelta = 10        # 单次滑动超过该值触发隐藏/恢复（px）
-      revealMode = 'scrollUp' # 隐藏后如何恢复：top = 回到顶部才显示 | scrollUp = 上划即显示
+      enable = true                    # 是否在移动端启用下滑隐藏顶栏
+      includeHome = false              # 是否包括主页
+      scrollThreshold = 5              # 滚动超过该距离后才允许隐藏（px）
+      scrollDelta = 10                 # 单次滑动超过该值触发隐藏/恢复（px）
+      revealMode = 'scrollUp'          # 隐藏后如何恢复：top = 回到顶部才显示 | scrollUp = 上划即显示
 
     # 电脑端下滑隐藏顶栏（min-width: 769px；默认关闭）
     [params.navbar.desktopCollapse]
-      enable = true
-      includeHome = false   # 是否包括主页
-      scrollThreshold = 5
-      scrollDelta = 5
-      revealMode = 'scrollUp'
+      enable = true                    # 是否在电脑端启用下滑隐藏顶栏
+      includeHome = false              # 是否包括主页
+      scrollThreshold = 5              # 滚动超过该距离后才允许隐藏（px）
+      scrollDelta = 5                  # 单次滑动超过该值触发隐藏/恢复（px）
+      revealMode = 'scrollUp'          # 隐藏后如何恢复：top = 回到顶部才显示 | scrollUp = 上划即显示
 
     # 顶栏随页面滚出视口（与自动隐藏互斥：对应端开启 collapse 时无效）
     [params.navbar.scrollWithPage]
-      enable = false       # true = 内页顶栏随页面滚出视口；false = 全站 fixed 顶栏
-      includeHome = false # false = 首页保持 fixed + Hero 全屏；true = 首页也随页滚动（透明顶栏叠层）
+      enable = false                   # true = 内页顶栏随页面滚出视口；false = 全站 fixed 顶栏
+      includeHome = false              # false = 首页保持 fixed + Hero 全屏；true = 首页也随页滚动（透明顶栏叠层）
 
   # --- 全文搜索（Fuse.js）---
   [params.search]
-    enable = true
+    enable = true          # 是否启用全文搜索
     threshold = 0.35       # 匹配灵敏度（越小越严格）
 
   # --- 顶栏 / 侧栏导航菜单 ---
   # weight 越小越靠前；带 items 的项会展开子菜单
   [[params.menu.main]]
-    name = '首页'
-    url = '/'
-    icon = 'ant-design:home-filled'
-    weight = 1
+    name = '首页'                      # 菜单显示名称
+    url = '/'                          # 菜单链接
+    icon = 'ant-design:home-filled'    # 菜单图标（Iconify 名称）
+    weight = 1                         # 排序权重，越小越靠前
   [[params.menu.main]]
-    name = '文章'
-    url = '/categories/'
-    icon = 'ant-design:read-filled'
-    navGroup = 'posts'
-    weight = 2
+    name = '文章'                      # 菜单显示名称
+    url = '/categories/'               # 菜单链接
+    icon = 'ant-design:read-filled'    # 菜单图标（Iconify 名称）
+    navGroup = 'posts'                 # 导航分组标识，用于高亮/折叠
+    weight = 2                         # 排序权重，越小越靠前
     [[params.menu.main.items]]
-      name = '分类'
-      url = '/categories/'
-      icon = 'ant-design:appstore-filled'
+      name = '分类'                        # 子菜单显示名称
+      url = '/categories/'                 # 子菜单链接
+      icon = 'ant-design:appstore-filled'  # 子菜单图标
     [[params.menu.main.items]]
-      name = '归档'
-      url = '/archives/'
-      icon = 'ant-design:container-filled'
+      name = '归档'                        # 子菜单显示名称
+      url = '/archives/'                   # 子菜单链接
+      icon = 'ant-design:container-filled' # 子菜单图标
     [[params.menu.main.items]]
-      name = '标签'
-      url = '/tags/'
-      icon = 'ant-design:tags-filled'
+      name = '标签'                        # 子菜单显示名称
+      url = '/tags/'                       # 子菜单链接
+      icon = 'ant-design:tags-filled'      # 子菜单图标
   [[params.menu.main]]
-    name = '个人'
-    url = '/moments/'
-    icon = 'ant-design:user-outlined'
-    navGroup = 'personal'
-    weight = 3
+    name = '个人'                      # 菜单显示名称
+    url = '/moments/'                  # 菜单链接
+    icon = 'ant-design:user-outlined'  # 菜单图标（Iconify 名称）
+    navGroup = 'personal'              # 导航分组标识，用于高亮/折叠
+    weight = 3                         # 排序权重，越小越靠前
     [[params.menu.main.items]]
-      name = '相册'
-      url = '/gallery/'
-      icon = 'ant-design:picture-filled'
+      name = '相册'                        # 子菜单显示名称
+      url = '/gallery/'                    # 子菜单链接
+      icon = 'ant-design:picture-filled'   # 子菜单图标
     [[params.menu.main.items]]
-      name = '动态'
-      url = '/moments/'
-      icon = 'ant-design:compass-filled'
+      name = '动态'                        # 子菜单显示名称
+      url = '/moments/'                    # 子菜单链接
+      icon = 'ant-design:compass-filled'   # 子菜单图标
     [[params.menu.main.items]]
-      name = '追番'
-      url = '/bangumi/'
-      icon = 'mdi:television-play'
+      name = '追番'                        # 子菜单显示名称
+      url = '/bangumi/'                    # 子菜单链接
+      icon = 'mdi:television-play'         # 子菜单图标
   [[params.menu.main]]
-    name = '留言'
-    url = '/comment/'
-    icon = 'ant-design:message-filled'
-    weight = 4
+    name = '留言'                      # 菜单显示名称
+    url = '/comment/'                  # 菜单链接
+    icon = 'ant-design:message-filled' # 菜单图标（Iconify 名称）
+    weight = 4                         # 排序权重，越小越靠前
   [[params.menu.main]]
-    name = '友链'
-    url = '/links/'
-    icon = 'ant-design:global-outlined'
-    weight = 5
+    name = '友链'                      # 菜单显示名称
+    url = '/links/'                    # 菜单链接
+    icon = 'ant-design:global-outlined' # 菜单图标（Iconify 名称）
+    weight = 5                         # 排序权重，越小越靠前
   [[params.menu.main]]
-    name = '关于'
-    url = '/about/'
-    icon = 'ant-design:idcard-filled'
-    weight = 6
+    name = '关于'                      # 菜单显示名称
+    url = '/about/'                    # 菜单链接
+    icon = 'ant-design:idcard-filled'  # 菜单图标（Iconify 名称）
+    weight = 6                         # 排序权重，越小越靠前
 
 # --- 音乐播放器（APlayer + Meting.js）---
   # enable：是否显示播放器；单页可在 front matter 写 musicPlayer: false 关闭
   [params.music]
-    enable = true
-    position = 'right'        # left | right，按钮默认停靠左下或右下
+    enable = true                                 # 是否启用音乐播放器
+    position = 'right'                            # 悬浮按钮位置：left 左下 | right 右下
     
     # apis：按顺序尝试，前一个不可用时自动切换下一个，默认不需要动
-    apis = [
+    apis = [  # Meting API 地址列表，用于解析网易云等歌单信息
       'https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&r=:r',
       'https://api.injahow.cn/meting/?server=:server&type=:type&id=:id',
       'https://meting.qjqq.cn/?server=:server&type=:type&id=:id',
+      'https://meting.081531.xyz/api?server=:server&type=:type&id=:id&r=:r',
     ]
-    server = 'netease'
-    type = 'playlist'                             # playlist | song | album | artist
+    server = 'netease'                            # 音乐平台：netease | tencent | kugou 等
+    type = 'playlist'                             # 播放类型：playlist | song | album | artist
     id = '2580064383'                             # 网易云歌单/歌曲 ID
 
   # --- Live2D 看板娘（左下角 Live2D 角色）---
   # enable：是否启用；单页可在 front matter 写 live2d: false 关闭
   [params.live2d]
-    enable = true
+    enable = true                                 # 是否启用 Live2D 看板娘
     minWidth = 768                                # 低于此宽度不加载
-    drag = false
-    tools = ['hitokoto', 'asteroids', 'switch-model', 'switch-texture', 'photo', 'info', 'quit']
+    drag = false                                  # 是否允许拖拽看板娘
+    tools = ['hitokoto', 'asteroids', 'switch-model', 'switch-texture', 'photo', 'info', 'quit']  # 工具栏按钮列表
 
     # 看板娘运行时（脚本 / 样式 / 提示语，一般保持默认即可）
-    widget = 'https://live2d.kafuchino.top/'
-    waifuTips = 'jsdelivr/sequential/waifu-tips.js'
-    waifuCss = 'css/left.css'
-    waifuTipsJson = 'waifu-tips.json'
+    widget = 'https://live2d.kafuchino.top/'      # 看板娘 Widget 基础 URL
+    waifuTips = 'jsdelivr/sequential/waifu-tips.js'  # 提示语脚本路径
+    waifuCss = 'css/left.css'                     # 看板娘样式路径
+    waifuTipsJson = 'waifu-tips.json'             # 提示语文件路径
 
     # 模型库 cdnPath（静态模型目录，含 model_list.json）— 与 apiPath 二选一
     cdnPath = 'https://live2d.kafuchino.top/'     # nova1751 扩展库：少女前线等（21 组模型）
@@ -447,9 +584,9 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
   # --- 团团猫动态鼠标指针 ---
   # enable：是否启用；单页可在 front matter 写 mouse: false 关闭
   [params.mouse]
-    enable = true
-    path = '/mouse/tuantuanma/'                  # 预压缩 WebP + manifest.json（见 static/mouse/tuantuanma/）
-    scale = 0.25                                  # manifest 内记录的缩放；重新压缩时改 compress-mouse 脚本参数
+    enable = true                                # 是否启用自定义动态鼠标指针
+    path = '/mouse/tuantuanma/'                  # 预压缩 WebP + manifest.json 目录（见 static/mouse/tuantuanma/）
+    scale = 0.25                                 # manifest 内记录的缩放；重新压缩时改 compress-mouse 脚本参数
 
   # --- 全站背景特效（yzhanWeather · MIT，本地静态资源）---
   # enable：是否启用；单页可在 front matter 写 effects: false 关闭
@@ -457,20 +594,20 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
   # mobile：触摸设备或宽度 ≤768px 是否启用（默认 false）
   # randomize：打散雨/樱花/雪/蝴蝶轨迹；萤火虫不受此项影响，始终仅向上飘
   [params.effects]
-    enable = true
-    type = 'firefly'
-    randomTypes = ['sakura', 'rain', 'snow', 'firefly', 'butterfly']
+    enable = true                                   # 是否启用全站背景特效
+    type = 'firefly'                                # 特效类型（sakura / rain / snow / firefly / butterfly / random）
+    randomTypes = ['sakura', 'rain', 'snow', 'firefly', 'butterfly']  # type = 'random' 时的候选特效
     randomize = true                                # 打散位置/速度/轨迹，避免过于规律
     mobile = false                                  # 移动端是否启用（默认关闭）
     maxDuration = 10                                # 动画基准周期（秒），越大越慢
     zIndex = 5                                      # 层级，需低于弹窗/导航
-    script = '/vendor/yzhanweather/yzhanweather.min.js'
+    script = '/vendor/yzhanweather/yzhanweather.min.js'  # 特效脚本路径
 
   # --- 站内无刷新跳转（PJAX）---
   [params.pjax]
-    enable = true
-    fadeDuration = 200                            # 内容区淡入淡出时长（毫秒）
-    mountDelay = 120                              # 页内跳转：CSS/JS 就绪后额外等待（毫秒），减少布局突变
+    enable = true                                   # 是否启用站内无刷新跳转
+    fadeDuration = 200                              # 内容区淡入淡出时长（毫秒）
+    mountDelay = 120                                # 页内跳转：CSS/JS 就绪后额外等待（毫秒），减少布局突变
 
   # --- 外链安全中转（仅处理 Markdown 正文中的站外 HTTP/HTTPS 链接）---
   [params.safego]

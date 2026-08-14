@@ -1,17 +1,18 @@
-<section class="friend-link-notice">
+{{- $apiBase := site.Params.links.applicationAPI | default `https://blog-api.2005815.xyz` -}}
+<section class="friend-link-notice" id="friend-link-application" data-api-base="{{ $apiBase | safeURL }}">
   <header class="friend-link-notice__header">
     <h2 class="friend-link-notice__title">
       <span class="friend-link-notice__title-icon" aria-hidden="true">✦</span>
       加入本站友链方式
     </h2>
-    <p class="friend-link-notice__subtitle">参照以下格式留言即可</p>
+    <p class="friend-link-notice__subtitle">填写下方表单申请交换友链，审核通过后会显示在友链列表中。</p>
   </header>
 
-  <textarea id="yml-template" hidden readonly>- name: #站点名称
-  link: #站点链接
-  avatar: #站长头像
-  descr: #站点描述
-  siteshot: #站点截图</textarea>
+  <textarea id="yml-template" hidden readonly>- name: 喵洛阁
+  link: https://blog.kemiaosw.top/
+  avatar: https://r2tc.20030327.xyz/file/博客/主题/1780655293662_avatar_me.jpg.PNG
+  descr: 雨滴会记录生命中的每一个瞬间
+  siteshot: https://r2tc.20030327.xyz/file/博客/主题/1780909850378_1780909790262.png</textarea>
 
   <div class="friend-link-code">
     <div class="friend-link-code__bar">
@@ -24,14 +25,13 @@
       <button type="button" class="friend-link-code__copy" id="copy-yml-btn" title="复制代码" aria-label="复制代码">📋</button>
     </div>
 
-    <pre class="friend-link-code__body"><code><span class="friend-link-code__line"><span class="friend-link-code__ln">1</span><span class="friend-link-code__text">- name: #站点名称</span></span><span class="friend-link-code__line"><span class="friend-link-code__ln">2</span><span class="friend-link-code__text">  link: #站点链接</span></span><span class="friend-link-code__line"><span class="friend-link-code__ln">3</span><span class="friend-link-code__text">  avatar: #站长头像</span></span><span class="friend-link-code__line"><span class="friend-link-code__ln">4</span><span class="friend-link-code__text">  descr: #站点描述</span></span><span class="friend-link-code__line"><span class="friend-link-code__ln">5</span><span class="friend-link-code__text">  siteshot: #站点截图</span></span></code></pre>
+    <pre class="friend-link-code__body"><code><span class="friend-link-code__line"><span class="friend-link-code__ln">1</span><span class="friend-link-code__text">- name: 喵洛阁</span></span><span class="friend-link-code__line"><span class="friend-link-code__ln">2</span><span class="friend-link-code__text">  link: https://blog.kemiaosw.top/</span></span><span class="friend-link-code__line"><span class="friend-link-code__ln">3</span><span class="friend-link-code__text">  avatar: https://r2tc.20030327.xyz/file/博客/主题/1780655293662_avatar_me.jpg.PNG</span></span><span class="friend-link-code__line"><span class="friend-link-code__ln">4</span><span class="friend-link-code__text">  descr: 雨滴会记录生命中的每一个瞬间</span></span><span class="friend-link-code__line"><span class="friend-link-code__ln">5</span><span class="friend-link-code__text">  siteshot: https://r2tc.20030327.xyz/file/博客/主题/1780909850378_1780909790262.png</span></span></code></pre>
 
     <span class="friend-link-code__cat" aria-hidden="true">🐱</span>
   </div>
 
   <div class="friend-link-rules">
     <span class="friend-link-rules__plus" aria-hidden="true">+</span>
-
     <ul class="friend-link-rules__list">
       <li class="friend-link-rules__item"><span class="friend-link-rules__icon">🎉</span><span>本站支持交换友链，在您提出申请之前，请将本站添加到友链</span></li>
       <li class="friend-link-rules__item"><span class="friend-link-rules__icon">🍵</span><span>为了保障本站用户，本站仅支持个人网站的友链申请</span></li>
@@ -40,19 +40,106 @@
       <li class="friend-link-rules__item"><span class="friend-link-rules__icon">🐚</span><span>网站有一定的实质性内容和主题，不能是空壳网站和练手网站</span></li>
       <li class="friend-link-rules__item"><span class="friend-link-rules__icon">💕</span><span>感谢您对本站的支持，如果您已经满足上述要求，请在下方表单提交友链申请~~~</span></li>
     </ul>
-
-    <div class="friend-link-site-info">
-      <p class="friend-link-site-info__title">
-        <span aria-hidden="true">📍</span>
-        本站友链信息如下：
-      </p>
-      <ul class="friend-link-site-info__list">
-        <li>站点名称：<span class="friend-link-highlight">{{ .Site.Title }}</span></li>
-        <li>站点链接：<span class="friend-link-highlight">{{ .Site.BaseURL }}</span></li>
-        <li>站长头像：<span class="friend-link-highlight">https://r2tc.20030327.xyz/file/博客/主题/1780655293662_avatar_me.jpg.PNG</span></li>
-        <li>站点描述：<span class="friend-link-highlight">雨滴会记录生命中的每一个瞬间</span></li>
-        <li>站点截图：<span class="friend-link-highlight">https://r2tc.20030327.xyz/file/博客/主题/1780909850378_1780909790262.png</span></li>
-      </ul>
-    </div>
   </div>
+
+  <section class="friend-link-apply-card" aria-labelledby="friend-link-apply-title">
+    <header class="friend-link-card__header">
+      <h3 id="friend-link-apply-title">✦ 友链申请</h3>
+      <p>请先确认符合申请条件，再填写友链资料。</p>
+    </header>
+
+    <div class="friend-link-conditions" id="friend-link-conditions">
+      <p class="friend-link-conditions__hint">请先确认满足以下条件：</p>
+      <label class="friend-link-condition"><input type="checkbox" class="friend-link-condition__check"><span>我已添加本站的友情链接</span></label>
+      <label class="friend-link-condition"><input type="checkbox" class="friend-link-condition__check"><span>我的网站现在可以在中国大陆区域正常访问</span></label>
+      <label class="friend-link-condition"><input type="checkbox" class="friend-link-condition__check"><span>网站内容符合中国大陆法律法规</span></label>
+      <label class="friend-link-condition"><input type="checkbox" class="friend-link-condition__check"><span>我的链接主体为个人，网站类型为博客</span></label>
+      <label class="friend-link-condition"><input type="checkbox" class="friend-link-condition__check"><span>网站域名不是免费域名（github.io、gitee.io 除外）</span></label>
+      <p class="friend-link-conditions__error" id="friend-link-conditions-error" hidden>请勾选全部申请条件后继续。</p>
+    </div>
+
+    <div class="friend-link-form-wrap" id="friend-link-form-wrap" hidden>
+      <div class="friend-link-mode-switch" role="group" aria-label="申请类型">
+        <button type="button" class="friend-link-mode-switch__button" data-friend-mode="apply">申请友链</button>
+        <button type="button" class="friend-link-mode-switch__button" data-friend-mode="update">更新友链/信息</button>
+      </div>
+      <p class="friend-link-form__mode-hint" id="friend-link-mode-hint">请选择申请友链或更新友链/信息。</p>
+      <div class="friend-link-form__error" id="friend-link-form-error" role="alert" hidden></div>
+
+      <form id="friend-link-form" hidden novalidate>
+        <div class="friend-link-form__grid">
+          <div class="friend-link-field friend-link-field--update" data-update-only hidden>
+            <label for="friend-original-url">原站点地址 <span aria-hidden="true">*</span></label>
+            <input id="friend-original-url" name="original_url" type="url" placeholder="https://old.example.com">
+          </div>
+          <div class="friend-link-field">
+            <label for="friend-name">站点名称 <span class="friend-link-required-marker" aria-hidden="true">*</span></label>
+            <input id="friend-name" name="name" placeholder="站点名称">
+          </div>
+          <div class="friend-link-field">
+            <label for="friend-link">网站地址 <span class="friend-link-required-marker" aria-hidden="true">*</span></label>
+            <input id="friend-link" name="link" type="url" placeholder="https://example.com">
+          </div>
+          <div class="friend-link-field">
+            <label for="friend-avatar">头像地址 <span class="friend-link-required-marker" aria-hidden="true">*</span></label>
+            <input id="friend-avatar" name="avatar" type="url" placeholder="https://example.com/avatar.png">
+          </div>
+          <div class="friend-link-field">
+            <label for="friend-email">联系邮箱</label>
+            <input id="friend-email" name="email" type="email" placeholder="用于接收审核通知（选填）">
+            <small class="friend-link-field__hint" data-update-only hidden>如果原友链登记过邮箱，请填写相同邮箱。</small>
+          </div>
+          <div class="friend-link-field">
+            <label for="friend-description">站点描述</label>
+            <input id="friend-description" name="description" placeholder="一句话介绍你的站点">
+          </div>
+          <div class="friend-link-field">
+            <label for="friend-snapshot">站点截图 URL</label>
+            <input id="friend-snapshot" name="snapshot" type="url" placeholder="https://example.com/screenshot.png">
+          </div>
+          <div class="friend-link-field">
+            <label for="friend-page">友链页面地址 <span class="friend-link-required-marker" aria-hidden="true">*</span></label>
+            <input id="friend-page" name="friend_link_page" type="url" placeholder="https://example.com/links">
+          </div>
+          <div class="friend-link-field friend-link-field--rss">
+            <label for="friend-feed">RSS 订阅</label>
+            <input id="friend-feed" name="feed" type="url" placeholder="RSS 订阅地址（如 https://example.com/atom.xml）">
+          </div>
+        </div>
+        <button type="submit" class="friend-link-submit" id="friend-link-submit">提交申请</button>
+      </form>
+    </div>
+
+    <div class="friend-link-success" id="friend-link-success" hidden>
+      <h4>✅ 提交成功</h4>
+      <p id="friend-link-success-message"></p>
+      <button type="button" class="friend-link-secondary-button" id="friend-link-continue">继续申请</button>
+    </div>
+  </section>
+
+  <section class="friend-link-status-card" aria-labelledby="friend-link-status-title">
+    <header class="friend-link-card__header friend-link-status__header">
+      <div>
+        <h3 id="friend-link-status-title">申请列表 <span class="friend-link-status__count" id="friend-link-status-count"></span></h3>
+        <p>这里展示公开的友链申请审核进度。</p>
+      </div>
+      <div class="friend-link-status__controls">
+        <select id="friend-link-status-filter" aria-label="申请状态筛选">
+          <option value="">全部状态</option>
+          <option value="pending">待审核</option>
+          <option value="approved">已通过</option>
+          <option value="rejected">已拒绝</option>
+
+        </select>
+        <input id="friend-link-status-search" type="search" placeholder="搜索名称" aria-label="搜索申请名称">
+      </div>
+    </header>
+    <div class="friend-link-status__error" id="friend-link-status-error" role="alert" hidden></div>
+    <div class="friend-link-status__list" id="friend-link-status-list"><p class="friend-link-status__hint">正在加载申请记录…</p></div>
+    <div class="friend-link-status__pagination" id="friend-link-status-pagination" hidden>
+      <button type="button" class="friend-link-secondary-button" id="friend-link-page-prev">←</button>
+      <span id="friend-link-page-info"></span>
+      <button type="button" class="friend-link-secondary-button" id="friend-link-page-next">→</button>
+    </div>
+  </section>
 </section>

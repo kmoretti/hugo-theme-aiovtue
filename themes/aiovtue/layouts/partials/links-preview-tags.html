@@ -1,0 +1,22 @@
+{{- $tags := .Tags | default slice -}}
+{{- if not (reflect.IsSlice $tags) -}}
+  {{- $tags = slice $tags -}}
+{{- end -}}
+{{- $cleanTags := slice -}}
+{{- range $tags -}}
+  {{- $tag := strings.TrimSpace (printf "%v" .) -}}
+  {{- if and $tag (not (in $cleanTags $tag)) -}}
+    {{- $cleanTags = $cleanTags | append $tag -}}
+  {{- end -}}
+{{- end -}}
+{{- if $cleanTags -}}
+  <div class="links-preview-tags" aria-label="友链标签">
+    {{- range first 3 $cleanTags -}}
+      <span class="links-preview-tag">{{ . }}</span>
+    {{- end -}}
+    {{- $remaining := sub (len $cleanTags) 3 -}}
+    {{- if gt $remaining 0 -}}
+      <span class="links-preview-tag links-preview-tag--more">+{{ $remaining }}</span>
+    {{- end -}}
+  </div>
+{{- end -}}

@@ -15,6 +15,7 @@ import {
   initAlbumPasswordGate,
 } from './post-content.js'
 import { initNoticeBoard } from './notice-board.js'
+import { initHomeMomentsTicker } from './home-moments-ticker.js'
 import { initSiteRuntime } from './site-runtime.js'
 import {
   initHomeLayoutRandom,
@@ -34,6 +35,8 @@ import { customizeTwikooCommentForm, observeTwikooCommentForm, cleanupTwikooForm
 import { initLightbox, initAlbumVideoThumbs, cleanupLightbox } from './lightbox.js'
 import { initCharts, cleanupCharts } from './charts.js'
 import { initFooterLinks, initLinksPreviewShuffle, initLinksRssSpotlight, cleanupLinksRssSpotlight } from './links.js'
+import { initRemoteLinks } from './remote-links.js'
+import { initFriendLinkApplication } from './friend-link-application.js'
 import { initMomentsModule, initExcalidrawModule, initGalleryPostModule } from './lazy-modules.js'
 import { isPjaxContentMounting } from './page-nav.js'
 import { initSearchPage } from './search-page.js'
@@ -66,6 +69,7 @@ function mountPage() {
   initPostSponsor()
   bindHeroScrollDown()
   initNoticeBoard()
+  initHomeMomentsTicker()
   initSiteRuntime()
   initHomeLayoutRandom()
   initHomePaginationScroll()
@@ -93,6 +97,8 @@ function mountPage() {
   initAlbumVideoThumbs()
   void initCharts().catch((err) => console.warn('[charts]', err))
   initFooterLinks()
+  initRemoteLinks()
+  initFriendLinkApplication()
   initLinksPreviewShuffle()
   initLinksRssSpotlight()
   if (!isPjaxContentMounting()) {

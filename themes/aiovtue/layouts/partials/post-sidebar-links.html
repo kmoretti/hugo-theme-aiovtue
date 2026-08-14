@@ -1,4 +1,4 @@
-{{- $group := index (hugo.Data.links.linkGroups | default slice) 0 -}}
+{{- $group := index (.Site.Data.links.linkGroups | default slice) 0 -}}
 {{- $links := $group.links | default slice -}}
 {{- if gt (len $links) 0 -}}
 <div class="sakura-toc sakura-post-sidebar-links">

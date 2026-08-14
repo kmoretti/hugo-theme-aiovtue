@@ -3,13 +3,15 @@
 {{- $layout := .layout -}}
 {{- $parsed := partial "moments/parse-content.html" $page -}}
 {{- $entryKey := partial "moments/comment-path.html" $page -}}
-{{- if eq $layout "cards" -}}
+{{- if or (eq $layout "cards") (eq $layout "ech0") -}}
 <article
-  class="moments-card"
+  class="moments-card{{ if eq $layout "ech0" }} moments-card--ech0{{ end }}"
   id="moments-entry-{{ $index }}"
   data-entry-key="{{ $entryKey }}"
 >
+  {{- if eq $layout "ech0" }}<p class="moments-card__author">{{ .authorName }}</p>{{- end -}}
   {{- partial "moments/date.html" (dict "page" $page "class" "moments-card__meta") -}}
+  {{- if default true site.Params.moments.showSourceBadge }}<span class="moments-source-badge moments-source-badge--local">本地</span>{{- end -}}
   {{- with $parsed.text -}}
     <div class="moments-card__text moment-prose">{{ . | markdownify }}</div>
   {{- end -}}
@@ -21,6 +23,7 @@
       "photoClass" "moments-card__photo"
     ) -}}
   {{- end -}}
+  {{- partial "moments/extension-cards.html" $page -}}
   <div class="moments-card__footer">
     {{- partial "moments/comment-toggle.html" $page -}}
   </div>
@@ -46,8 +49,10 @@
         "photoClass" "travel-moment__photo"
       ) -}}
     {{- end -}}
+    {{- partial "moments/extension-cards.html" $page -}}
     <div class="travel-moment__footer">
       {{- partial "moments/date.html" (dict "page" $page "class" "travel-moment__meta") -}}
+      {{- if default true site.Params.moments.showSourceBadge }}<span class="moments-source-badge moments-source-badge--local">本地</span>{{- end -}}
       {{- partial "moments/comment-toggle.html" $page -}}
     </div>
     {{- partial "moments/comment-panel.html" $page -}}

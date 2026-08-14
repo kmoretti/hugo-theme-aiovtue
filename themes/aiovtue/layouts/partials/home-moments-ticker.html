@@ -1,0 +1,118 @@
+{{- $ctx := . -}}
+{{- $momentsConfig := site.Params.moments -}}
+{{- $tickerConfig := site.Params.home.momentsTicker -}}
+{{- $source := default "local" $momentsConfig.source -}}
+{{- if not (in (slice "local" "remote" "both") $source) -}}{{- $source = "local" -}}{{- end -}}
+{{- $provider := default "ech0" $momentsConfig.provider -}}
+{{- if not (in (slice "ech0" "blog_api") $provider) -}}{{- $provider = "ech0" -}}{{- end -}}
+{{- $remoteURL := default "https://m.081531.xyz" $momentsConfig.remoteURL -}}
+{{- $remoteEndpoint := default "/api/echo/query" $momentsConfig.remoteEndpoint -}}
+{{- $maxItems := default 5 $tickerConfig.maxItems -}}
+{{- if lt $maxItems 1 -}}{{- $maxItems = 5 -}}{{- end -}}
+{{- $remoteMaxItems := default 20 $tickerConfig.remoteMaxItems -}}
+{{- if lt $remoteMaxItems 1 -}}{{- $remoteMaxItems = 20 -}}{{- end -}}
+{{- $interval := default 5000 $tickerConfig.interval -}}
+{{- if lt $interval 1000 -}}{{- $interval = 5000 -}}{{- end -}}
+{{- $homeItems := slice -}}
+{{- $momentPages := where site.RegularPages "Section" "moments" -}}
+{{- range $page := $momentPages.ByDate.Reverse -}}
+  {{- if ne $page.Params.ticker false -}}
+    {{- $parsed := partial "moments/parse-content.html" $page -}}
+    {{- $extensions := $page.Params.extensions | default slice -}}
+    {{- if not (reflect.IsSlice $extensions) -}}{{- $extensions = slice $extensions -}}{{- end -}}
+    {{- with $page.Params.extension -}}{{- $extensions = $extensions | append . -}}{{- end -}}
+    {{- $resourceTypes := slice -}}
+    {{- if $parsed.photos -}}{{- $resourceTypes = $resourceTypes | append "image" -}}{{- end -}}
+    {{- range $extension := $extensions -}}
+      {{- if reflect.IsMap $extension -}}
+        {{- $type := lower (printf "%v" (index $extension "type")) -}}
+        {{- if and $type (in (slice "github" "website" "location" "music" "tweet" "video") $type) -}}
+          {{- $resourceTypes = $resourceTypes | append $type -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $summary := $page.Params.tickerText | default $parsed.text -}}
+    {{- $summary = $summary | plainify | replaceRE `!\[[^\]]*\]\([^)]*\)` "" | replaceRE `\[([^\]]+)\]\([^)]*\)` "$1" | replaceRE `\s+` " " | strings.TrimSpace -}}
+    {{- $homeItems = $homeItems | append (dict
+      "source" "local"
+      "sourceId" $page.File.UniqueID
+      "content" $parsed.text
+      "summary" $summary
+      "dateISO" ($page.Date.Format "2006-01-02T15:04:05Z07:00")
+      "pinnedOrder" 0
+      "isAd" false
+      "tags" ($page.Params.tags | default slice)
+      "resourceTypes" ($resourceTypes | uniq)
+      "extensions" $extensions
+      "detailUrl" "/moments/"
+    ) -}}
+  {{- end -}}
+{{- end -}}
+{{- $enabled := true -}}
+{{- if isset $tickerConfig "enable" -}}{{- $enabled = $tickerConfig.enable -}}{{- end -}}
+{{- $autoPlay := true -}}
+{{- if isset $tickerConfig "autoPlay" -}}{{- $autoPlay = $tickerConfig.autoPlay -}}{{- end -}}
+{{- $showSourceBadge := true -}}
+{{- if isset $tickerConfig "showSourceBadge" -}}{{- $showSourceBadge = $tickerConfig.showSourceBadge -}}{{- end -}}
+{{- $showResourceIcons := true -}}
+{{- if isset $tickerConfig "showResourceIcons" -}}{{- $showResourceIcons = $tickerConfig.showResourceIcons -}}{{- end -}}
+{{- $showTags := true -}}
+{{- if isset $tickerConfig "showTags" -}}{{- $showTags = $tickerConfig.showTags -}}{{- end -}}
+{{- $showTime := true -}}
+{{- if isset $tickerConfig "showTime" -}}{{- $showTime = $tickerConfig.showTime -}}{{- end -}}
+{{- $showAds := true -}}
+{{- if isset $tickerConfig "showAds" -}}{{- $showAds = $tickerConfig.showAds -}}{{- end -}}
+{{- $showAdBadge := true -}}
+{{- if isset $tickerConfig "showAdBadge" -}}{{- $showAdBadge = $tickerConfig.showAdBadge -}}{{- end -}}
+{{- if $enabled -}}
+<section
+  class="home-moments-ticker"
+  data-home-moments-ticker
+  data-home-moments-source="{{ $source }}"
+  data-home-moments-provider="{{ $provider }}"
+  data-home-moments-remote-url="{{ $remoteURL }}"
+  data-home-moments-remote-endpoint="{{ $remoteEndpoint }}"
+  data-home-moments-max-items="{{ $maxItems }}"
+  data-home-moments-remote-max-items="{{ $remoteMaxItems }}"
+  data-home-moments-interval="{{ $interval }}"
+  data-home-moments-autoplay="{{ $autoPlay }}"
+  data-home-moments-source-badge="{{ $showSourceBadge }}"
+  data-home-moments-resource-icons="{{ $showResourceIcons }}"
+  data-home-moments-tags="{{ $showTags }}"
+  data-home-moments-time="{{ $showTime }}"
+  data-home-moments-show-ads="{{ $showAds }}"
+  data-home-moments-ad-badge="{{ $showAdBadge }}"
+  aria-labelledby="home-moments-ticker-title"
+>
+  <div class="home-moments-ticker__header">
+    <h2 id="home-moments-ticker-title" class="home-moments-ticker__title">
+      <span class="home-moments-ticker__title-icon" aria-hidden="true">✦</span>
+      <span>说说</span>
+    </h2>
+    <a class="home-moments-ticker__all-link" href="{{ "moments/" | relURL }}">查看全部<span aria-hidden="true"> →</span></a>
+  </div>
+  <div class="home-moments-ticker__body">
+    <div class="home-moments-ticker__icon" aria-hidden="true">✎</div>
+    <div class="home-moments-ticker__viewport" aria-live="off">
+      <div class="home-moments-ticker__track" data-home-moments-track>
+        {{- if eq $source "local" -}}
+          {{- with index $homeItems 0 -}}
+            <a class="home-moments-ticker__item is-active" data-home-moments-item href="{{ "moments/" | relURL }}">
+              <span class="home-moments-ticker__summary">{{ .summary }}</span>
+              <span class="home-moments-ticker__meta"><span class="home-moments-ticker__source">本地</span></span>
+            </a>
+          {{- end -}}
+        {{- end -}}
+      </div>
+      <p class="home-moments-ticker__status" data-home-moments-status aria-live="polite" hidden></p>
+    </div>
+    <div class="home-moments-ticker__controls" aria-label="说说控制">
+      <button type="button" class="home-moments-ticker__control" data-home-moments-action="prev" aria-label="上一条说说">‹</button>
+      <button type="button" class="home-moments-ticker__control" data-home-moments-action="toggle" aria-label="暂停自动播放" aria-pressed="false">Ⅱ</button>
+      <button type="button" class="home-moments-ticker__control" data-home-moments-action="next" aria-label="下一条说说">›</button>
+    </div>
+    <button type="button" class="home-moments-ticker__refresh" data-home-moments-action="refresh" hidden>重试</button>
+  </div>
+  <script type="application/json" data-home-moments-local-data>{{ $homeItems | jsonify | safeJS }}</script>
+</section>
+{{- end -}}

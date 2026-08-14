@@ -1,5 +1,8 @@
+{{- $source := lower (default "local" site.Params.links.source) -}}
 {{- $all := .Scratch.Get "footerLinksAll" | default slice -}}
-{{- if gt (len $all) 0 -}}
+{{- if eq $source "remote" -}}
+<nav class="sakura-footer-links" id="sakura-footer-links" aria-label="友链" hidden></nav>
+{{- else if gt (len $all) 0 -}}
 <nav class="sakura-footer-links" id="sakura-footer-links" aria-label="友链">
   <ul class="sakura-footer-links__list">
     {{- range $all -}}

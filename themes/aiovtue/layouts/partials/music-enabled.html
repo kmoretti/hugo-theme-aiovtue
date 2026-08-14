@@ -4,5 +4,7 @@
 {{- end -}}
 {{- if isset .Params "musicplayer" -}}
   {{- $enabled = .Params.musicplayer -}}
+{{- else if and (eq .Layout "about") (isset site.Params.about "musicEnable") -}}
+  {{- $enabled = site.Params.about.musicEnable -}}
 {{- end -}}
 {{- return $enabled -}}
