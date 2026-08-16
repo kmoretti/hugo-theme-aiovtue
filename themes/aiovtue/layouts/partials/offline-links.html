@@ -1,0 +1,25 @@
+{{- $url := site.Params.links.offlineURL | default "" -}}
+<section
+  class="offline-links"
+  id="offline-links"
+  data-offline-url="{{ $url | safeURL }}"
+  aria-live="polite"
+  hidden
+>
+  <header class="offline-links__header">
+    <h2 class="offline-links__title">
+      <span class="offline-links__title-icon" aria-hidden="true">🪦</span>
+      <span>友链墓碑・相逢何必曾相识</span>
+    </h2>
+    <div class="offline-links__notice">
+      <p>说明：此处记录的友链因长期无法访问、站点关闭、或友链反链丢失、长期未更新（一年）等原因，由站长慎重考虑后，手动下线。</p>
+      <p>若因技术问题导致下线，欢迎站长修复后在下方友链申请表单选择“更新友链/信息”提交恢复资料。若站点已停止维护，则可能不再接受恢复请求。如有特殊情况，可联系站长详询。</p>
+    </div>
+  </header>
+  <p class="offline-links__status" data-offline-status="loading">正在加载失联友链…</p>
+  <div class="offline-links__content" data-offline-status="content" hidden></div>
+  <div class="offline-links__error" data-offline-status="error" hidden>
+    <p>失联友链暂时无法加载，请稍后重试。</p>
+    <button type="button" class="offline-links__retry">重新加载</button>
+  </div>
+</section>

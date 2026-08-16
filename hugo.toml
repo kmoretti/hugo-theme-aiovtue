@@ -106,6 +106,7 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
     layout = 'preview'                        # preview：卡片截图 | simple：长条头像+悬停预览
     source = 'remote'                         # local：data/links.yaml | remote：浏览器实时读取 remoteURL
     remoteURL = 'https://cdn.jsdmirror.com/gh/kmoretti/hexo-blog-source@main/source/_data/links.yml' # 远程友链数据源（支持 JSON / YAML）
+    offlineURL = 'https://cdn.jsdmirror.com/gh/kmoretti/butterfly-link-check@main/link-false.yml' # 失联友链数据源（浏览器实时读取）
     applicationAPI = 'https://verify.081531.xyz' # friendlink-verify 友链申请与审核状态 API
     rssEnable = true                          # 友链页「朋友动态」RSS 展示（关闭时不拉取 RSS）
     footerEnable = false                      # 全站页脚友链列表展示

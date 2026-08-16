@@ -36,6 +36,7 @@ import { initLightbox, initAlbumVideoThumbs, cleanupLightbox } from './lightbox.
 import { initCharts, cleanupCharts } from './charts.js'
 import { initFooterLinks, initLinksPreviewShuffle, initLinksRssSpotlight, cleanupLinksRssSpotlight } from './links.js'
 import { initRemoteLinks } from './remote-links.js'
+import { initOfflineLinks } from './offline-links.js'
 import { initFriendLinkApplication } from './friend-link-application.js'
 import { initMomentsModule, initExcalidrawModule, initGalleryPostModule } from './lazy-modules.js'
 import { isPjaxContentMounting } from './page-nav.js'
@@ -98,6 +99,7 @@ function mountPage() {
   void initCharts().catch((err) => console.warn('[charts]', err))
   initFooterLinks()
   initRemoteLinks()
+  initOfflineLinks()
   initFriendLinkApplication()
   initLinksPreviewShuffle()
   initLinksRssSpotlight()
