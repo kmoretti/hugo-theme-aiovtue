@@ -90,7 +90,7 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
 # =============================================================================
 [params]
   subtitle = '<K.M/>'                              # 副标题（首页标题后缀）
-  description = '克喵的小站'                  # 站点默认描述（SEO、分享卡片）
+  description = '克喵的小站，随便记录一点东西'                  # 站点默认描述（SEO、分享卡片）
   primaryColor = '#E5A84B'                     # 主题主色
   favicon = '/favicon.ico'                 # 站点图标路径（浏览器标签页、收藏夹）
   defaultCover = 'https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/bg.webp'               # 文章默认头图（无 cover 时使用）
