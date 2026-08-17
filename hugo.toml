@@ -142,7 +142,7 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
   # --- 追番页（Bilibili 追番列表，构建时拉取 data/bangumi.json）---
   [params.bangumi]
     enable = true                             # 是否启用追番页与构建时数据拉取
-    vmid = '334423445'                        # Bilibili 用户 UID（追番列表需空间公开）
+    vmid = '396923563'                        # Bilibili 用户 UID（追番列表需空间公开）
     quote = '生命不息，追番不止！'              # 页面引言
 
   # --- Excalidraw 画板文章（content/excalidraw/<slug>/index.md + *.excalidraw）---
@@ -207,24 +207,99 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
     [[params.about.identity]]
       label = '状态'
       value = '摸鱼ing...'
-    [[params.about.skills]]
-      name = 'Hugo'
-      icon = 'ri:terminal-box-line'
-    [[params.about.skills]]
-      name = 'HTML'
-      icon = 'ri:html5-line'
-    [[params.about.skills]]
-      name = 'CSS'
-      icon = 'ri:css3-line'
-    [[params.about.skills]]
-      name = 'JavaScript'
-      icon = 'ri:javascript-line'
-    [[params.about.skills]]
-      name = 'Git'
-      icon = 'ri:git-branch-line'
-    [[params.about.skills]]
-      name = 'Markdown'
-      icon = 'ri:markdown-line'
+    [[params.about.skillRows]]
+      [[params.about.skillRows.items]]
+        name = 'Python'
+        icon = 'simple-icons:python'
+      [[params.about.skillRows.items]]
+        name = 'Java'
+        icon = 'simple-icons:java'
+      [[params.about.skillRows.items]]
+        name = 'JavaScript'
+        icon = 'simple-icons:javascript'
+      [[params.about.skillRows.items]]
+        name = 'Node.js'
+        icon = 'simple-icons:nodedotjs'
+      [[params.about.skillRows.items]]
+        name = 'HTML5'
+        icon = 'simple-icons:html5'
+      [[params.about.skillRows.items]]
+        name = 'CSS'
+        icon = 'simple-icons:css'
+      [[params.about.skillRows.items]]
+        name = 'PHP'
+        icon = 'simple-icons:php'
+      [[params.about.skillRows.items]]
+        name = 'Rust'
+        icon = 'simple-icons:rust'
+      [[params.about.skillRows.items]]
+        name = 'Go'
+        icon = 'simple-icons:go'
+      [[params.about.skillRows.items]]
+        name = 'Swift'
+        icon = 'simple-icons:swift'
+    [[params.about.skillRows]]
+      [[params.about.skillRows.items]]
+        name = 'React'
+        icon = 'simple-icons:react'
+      [[params.about.skillRows.items]]
+        name = 'Vue.js'
+        icon = 'simple-icons:vuedotjs'
+      [[params.about.skillRows.items]]
+        name = 'Angular'
+        icon = 'simple-icons:angular'
+      [[params.about.skillRows.items]]
+        name = 'Bootstrap'
+        icon = 'simple-icons:bootstrap'
+      [[params.about.skillRows.items]]
+        name = 'Sass'
+        icon = 'simple-icons:sass'
+      [[params.about.skillRows.items]]
+        name = 'Less'
+        icon = 'simple-icons:less'
+      [[params.about.skillRows.items]]
+        name = 'npm'
+        icon = 'simple-icons:npm'
+      [[params.about.skillRows.items]]
+        name = 'Laravel'
+        icon = 'simple-icons:laravel'
+      [[params.about.skillRows.items]]
+        name = 'Hugo'
+        icon = 'simple-icons:hugo'
+      [[params.about.skillRows.items]]
+        name = 'Cloudflare'
+        icon = 'simple-icons:cloudflare'
+    [[params.about.skillRows]]
+      [[params.about.skillRows.items]]
+        name = 'Git'
+        icon = 'simple-icons:git'
+      [[params.about.skillRows.items]]
+        name = 'GitHub'
+        icon = 'simple-icons:github'
+      [[params.about.skillRows.items]]
+        name = 'GitLab'
+        icon = 'simple-icons:gitlab'
+      [[params.about.skillRows.items]]
+        name = 'Docker'
+        icon = 'simple-icons:docker'
+      [[params.about.skillRows.items]]
+        name = 'Linux'
+        icon = 'simple-icons:linux'
+      [[params.about.skillRows.items]]
+        name = 'Windows'
+        icon = 'simple-icons:windows'
+      [[params.about.skillRows.items]]
+        name = 'Apple'
+        icon = 'simple-icons:apple'
+      [[params.about.skillRows.items]]
+        name = 'Figma'
+        icon = 'simple-icons:figma'
+      [[params.about.skillRows.items]]
+        name = 'Vercel'
+        icon = 'simple-icons:vercel'
+      [[params.about.skillRows.items]]
+        name = 'Amazon Web Services'
+        icon = 'simple-icons:amazonwebservices'
     [[params.about.projects]]
       name = '喵洛阁'
       url = '/'
@@ -234,14 +309,14 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
       url = 'https://github.com/kmoretti/blog_api'
       description = '为博客提供友链、动态等内容的数据服务。'
     [[params.about.focus]]
-      title = '站点体验'
-      description = '持续打磨博客的页面、交互和组件细节。'
+      title = '站点魔改'
+      description = '使用ai对博客/网站进行符合自己要求的修改'
     [[params.about.focus]]
-      title = '内容沉淀'
-      description = '把实践过程整理成更容易复用的文章。'
+      title = '项目部署'
+      description = '自己部署一些使用项目'
     [[params.about.focus]]
       title = '工具探索'
-      description = '关注 Hugo、自动化与 AI 辅助开发。'
+      description = '关注 博客框架 与 AI 辅助开发。'
     [[params.about.evaluation]]
       label = '思想'
       text = '保持开放和好奇，愿意从不同角度理解问题。'

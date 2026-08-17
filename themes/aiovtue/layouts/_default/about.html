@@ -5,7 +5,7 @@
 {{- $lead := $about.lead | default dict -}}
 {{- $identity := $about.identity | default slice -}}
 {{- $personality := $about.personality | default dict -}}
-{{- $skills := $about.skills | default slice -}}
+{{- $skillRows := $about.skillRows | default slice -}}
 {{- $hobbies := $about.hobbies | default slice -}}
 {{- $projects := $about.projects | default slice -}}
 {{- $focus := $about.focus | default slice -}}
@@ -55,7 +55,16 @@
 
       <section class="about-card about-card--skills">
         {{ partial "about-panel-head.html" (dict "Kicker" "Capabilities" "Title" "技能与工具") }}
-        <div class="about-skills-list">{{ range $skills }}<span class="about-skill-chip">{{ partial "about-icon.html" (.icon | default "ri:code-s-slash-line") }}<span>{{ .name }}</span></span>{{ end }}</div>
+        <div class="about-skills-marquee" aria-label="正在持续学习的技术与工具">
+          {{ range $index, $row := $skillRows }}
+            <div class="about-skills-marquee__row about-skills-marquee__row--{{ add $index 1 }}" tabindex="0">
+              <div class="about-skills-marquee__lane">
+                <div class="about-skills-marquee__group">{{ range $row.items }}<span class="about-skill-icon" role="img" aria-label="{{ .name }}" title="{{ .name }}">{{ partial "about-icon.html" (.icon | default "ri:code-s-slash-line") }}</span>{{ end }}</div>
+                <div class="about-skills-marquee__group" aria-hidden="true">{{ range $row.items }}<span class="about-skill-icon" title="{{ .name }}">{{ partial "about-icon.html" (.icon | default "ri:code-s-slash-line") }}</span>{{ end }}</div>
+              </div>
+            </div>
+          {{ end }}
+        </div>
         <p class="about-card-note">{{ $about.skillsNote | default "正在持续学习中" }}</p>
       </section>
 

@@ -55,7 +55,7 @@
   .about-panel-head span, .about-focus__label, .about-project-item > span { color: color-mix(in srgb, var(--about-accent) 76%, var(--about-text)); font-family: var(--va-font-mono); font-size: 0.78rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
   .about-panel-head h2 { margin: 0; color: var(--about-text); font-size: clamp(1.15rem, 2vw, 1.45rem); font-weight: 900; line-height: 1.2; }
   .about-info-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-  .about-info-item, .about-skill-chip, .about-project-item, .about-focus-item, .about-evaluation-item { border: 1px solid color-mix(in srgb, var(--about-accent) 22%, transparent); border-radius: 14px; background: var(--about-soft); box-shadow: inset 0 1px rgba(255, 255, 255, 0.1); }
+  .about-info-item, .about-project-item, .about-focus-item, .about-evaluation-item { border: 1px solid color-mix(in srgb, var(--about-accent) 22%, transparent); border-radius: 14px; background: var(--about-soft); box-shadow: inset 0 1px rgba(255, 255, 255, 0.1); }
   .about-info-item { display: flex; min-height: 52px; flex-direction: column; gap: 6px; padding: 10px 13px; }
   .about-info-item span { color: var(--about-muted); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; }
   .about-info-item strong, .about-info-item a { color: var(--about-text); font-size: 0.9rem; line-height: 1.5; overflow-wrap: anywhere; text-decoration: none; }
@@ -72,11 +72,20 @@
 
   .about-pill-list { display: flex; flex-wrap: wrap; gap: 7px; }
   .about-pill { display: inline-flex; min-height: 30px; align-items: center; padding: 5px 11px; border: 1px solid color-mix(in srgb, var(--about-accent) 20%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--about-accent) 8%, transparent); color: var(--about-text); font-size: 0.78rem; font-weight: 800; }
-  .about-skills-list { display: flex; flex-wrap: wrap; gap: 10px; }
-  .about-skill-chip { display: inline-flex; min-width: 78px; flex-direction: column; align-items: center; gap: 5px; padding: 10px 8px; color: var(--about-muted); font-size: 0.7rem; text-align: center; transition: transform 0.25s ease, border-color 0.25s ease; }
-  .about-skill-chip iconify-icon { display: inline-flex; flex: 0 0 auto; width: 1.7rem; height: 1.7rem; color: var(--about-accent); font-size: 1.7rem; }
-  .about-skill-chip:hover { border-color: var(--about-accent); transform: translateY(-4px); }
-  .about-card-note { margin: 15px 0 0; color: var(--about-muted); font-size: 0.82rem; }
+  .about-skills-marquee { display: grid; gap: 16px; margin-inline: calc(clamp(18px, 2.2vw, 24px) * -1); overflow: hidden; }
+  .about-skills-marquee__row { --skill-gap: 16px; position: relative; min-width: 0; padding-top: 4px; overflow: hidden; outline: none; }
+  .about-skills-marquee__row::before, .about-skills-marquee__row::after { position: absolute; z-index: 1; top: 0; bottom: 0; width: clamp(18px, 4vw, 42px); content: ""; pointer-events: none; }
+  .about-skills-marquee__row::before { left: 0; background: linear-gradient(90deg, var(--about-surface), transparent); }
+  .about-skills-marquee__row::after { right: 0; background: linear-gradient(270deg, var(--about-surface), transparent); }
+  .about-skills-marquee__lane { display: flex; width: max-content; animation: about-skills-marquee 34s linear infinite; }
+  .about-skills-marquee__row--2 .about-skills-marquee__lane { animation-duration: 41s; animation-direction: reverse; }
+  .about-skills-marquee__row--3 .about-skills-marquee__lane { animation-duration: 37s; }
+  .about-skills-marquee__group { display: flex; flex: 0 0 auto; gap: var(--skill-gap); padding-right: var(--skill-gap); }
+  .about-skill-icon { display: inline-flex; width: 96px; height: 96px; flex: 0 0 96px; align-items: center; justify-content: center; border: 1px solid color-mix(in srgb, var(--about-accent) 22%, transparent); border-radius: 16px; background: var(--about-soft); box-shadow: inset 0 1px rgba(255, 255, 255, 0.1); color: color-mix(in srgb, var(--about-text) 88%, var(--about-accent)); transition: transform 0.25s ease, border-color 0.25s ease, color 0.25s ease; }
+  .about-skill-icon iconify-icon { display: inline-flex; width: 2.6rem; height: 2.6rem; font-size: 2.6rem; }
+  .about-skill-icon:hover { border-color: var(--about-accent); color: var(--about-accent); transform: translateY(-4px); }
+  .about-skills-marquee__row:hover .about-skills-marquee__lane, .about-skills-marquee__row:focus-within .about-skills-marquee__lane, .about-skills-marquee__row:focus .about-skills-marquee__lane { animation-play-state: paused; }
+  .about-card-note { margin: 20px 0 0; color: var(--about-muted); font-size: 0.82rem; }
   .about-hobby-list { margin-top: 14px; }
   .about-project-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .about-project-item { display: grid; min-height: 132px; gap: 5px; padding: 14px; color: var(--about-text); text-decoration: none; transition: transform 0.25s ease, border-color 0.25s ease; }
@@ -106,12 +115,24 @@
     .about-lead__social, .about-social-grid, .about-info-list, .about-project-list, .about-focus-grid { grid-template-columns: 1fr; }
     .about-personality-body { grid-template-columns: 1fr; min-height: 0; }
       .about-personality-art { width: 84px; height: 96px; transform: scale(0.8); transform-origin: left center; }
+    .about-skills-marquee { gap: 12px; margin-inline: -18px; }
+    .about-skills-marquee__row { --skill-gap: 12px; }
+    .about-skill-icon { width: 78px; height: 78px; flex-basis: 78px; border-radius: 14px; }
+    .about-skill-icon iconify-icon { width: 2.1rem; height: 2.1rem; font-size: 2.1rem; }
     .about-markdown { padding-inline: 8px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .about-personality-art, .about-skill-chip, .about-social-card, .about-project-item { transition: none; }
-    .about-personality-body:hover .about-personality-art, .about-skill-chip:hover, .about-social-card:hover, .about-project-item:hover { transform: none; }
+    .about-personality-art, .about-skill-icon, .about-social-card, .about-project-item { transition: none; }
+    .about-personality-body:hover .about-personality-art, .about-skill-icon:hover, .about-social-card:hover, .about-project-item:hover { transform: none; }
+    .about-skills-marquee__row { overflow-x: auto; scrollbar-width: thin; }
+    .about-skills-marquee__row::before, .about-skills-marquee__row::after { display: none; }
+    .about-skills-marquee__lane { animation: none; }
+    .about-skills-marquee__group[aria-hidden="true"] { display: none; }
   }
+}
+
+@keyframes about-skills-marquee {
+  to { transform: translateX(-50%); }
 }
 
 html:has(.sakura-about-page) .sakura-navbar .navbar-content { background: color-mix(in srgb, #10131a 92%, transparent); }
